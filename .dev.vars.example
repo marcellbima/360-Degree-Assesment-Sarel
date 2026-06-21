@@ -1,0 +1,5 @@
+# Contoh secret lokal untuk Cloudflare Worker (Phase berikutnya).
+# Jangan mengisi secret asli di file ini dan jangan commit .dev.vars.
+SESSION_SECRET=
+PASSWORD_PEPPER=
+TURNSTILE_SECRET_KEY=

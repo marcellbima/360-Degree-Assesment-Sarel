@@ -1,0 +1,137 @@
+{
+  "monitoringSummaryExample": {
+    "filter": {
+      "programId": "program_01",
+      "batchId": "batch_01"
+    },
+    "primaryMetrics": {
+      "targetParticipants": 126,
+      "completedSelfParticipants": 48,
+      "questionnaireCompletionPercent": 38.1
+    },
+    "submissionMetrics": {
+      "totalTargetSubmissions": 756,
+      "totalCompletedSubmissions": 319,
+      "overallSubmissionProgressPercent": 42.2
+    },
+    "byType": [
+      {
+        "code": "SELF",
+        "name": "Self",
+        "target": 126,
+        "realisasi": 48,
+        "persentase": 38.1
+      },
+      {
+        "code": "SUPERIOR",
+        "name": "Superior",
+        "target": 126,
+        "realisasi": 64,
+        "persentase": 50.79
+      },
+      {
+        "code": "PEER",
+        "name": "Peer",
+        "target": 252,
+        "realisasi": 126,
+        "persentase": 50
+      },
+      {
+        "code": "SUBORDINATE",
+        "name": "Subordinate",
+        "target": 252,
+        "realisasi": 81,
+        "persentase": 32.14
+      }
+    ],
+    "generatedAt": "2026-06-21T12:00:00Z"
+  },
+  "monitoringParticipantsExample": {
+    "filter": {
+      "programId": "program_01",
+      "batchId": "batch_01",
+      "view": "total",
+      "q": ""
+    },
+    "pagination": {
+      "page": 1,
+      "pageSize": 20,
+      "total": 126,
+      "totalPages": 7
+    },
+    "sort": {
+      "field": "overallSubmissionProgressPercent",
+      "dir": "desc"
+    },
+    "data": [
+      {
+        "programParticipantId": "pp_99",
+        "userId": "U123",
+        "employeeId": "E001",
+        "fullName": "Budi Santoso",
+        "position": "Supervisor",
+        "unit": "Sales",
+        "organization": "Main Dealer Barat",
+        "batch": "Batch Jakarta",
+        "self": {
+          "status": "SUBMITTED",
+          "submittedAt": "2026-06-20T09:00:00Z"
+        },
+        "superior": {
+          "target": 2,
+          "realisasi": 1,
+          "persentase": 50
+        },
+        "peer": {
+          "target": 3,
+          "realisasi": 2,
+          "persentase": 66.67
+        },
+        "subordinate": {
+          "target": 2,
+          "realisasi": 2,
+          "persentase": 100
+        },
+        "total": {
+          "targetSubmissions": 8,
+          "completedSubmissions": 6,
+          "overallSubmissionProgressPercent": 75
+        }
+      },
+      {
+        "programParticipantId": "pp_100",
+        "userId": "U124",
+        "employeeId": "E002",
+        "fullName": "Sari Wahyuni",
+        "position": "Staff",
+        "unit": "Finance",
+        "organization": "Main Dealer Timur",
+        "batch": "Batch Jakarta",
+        "self": {
+          "status": "NOT_SUBMITTED",
+          "submittedAt": null
+        },
+        "superior": {
+          "target": 1,
+          "realisasi": 0,
+          "persentase": 0
+        },
+        "peer": {
+          "target": 3,
+          "realisasi": 3,
+          "persentase": 100
+        },
+        "subordinate": {
+          "target": 0,
+          "realisasi": 0,
+          "persentase": 0
+        },
+        "total": {
+          "targetSubmissions": 5,
+          "completedSubmissions": 3,
+          "overallSubmissionProgressPercent": 60
+        }
+      }
+    ]
+  }
+}

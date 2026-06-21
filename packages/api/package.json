@@ -1,0 +1,16 @@
+{
+  "name": "@sarel/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@sarel/core": "workspace:*",
+    "@sarel/shared": "workspace:*",
+    "hono": "^4.6.14"
+  }
+}
