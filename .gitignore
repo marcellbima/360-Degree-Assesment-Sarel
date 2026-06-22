@@ -23,3 +23,5 @@ Thumbs.db
 backups/
 tmp/
 .temp/
+
+scripts/*.generated.sql

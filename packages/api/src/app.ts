@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
 import { formatError } from './errors';
+import { authMiddleware } from './middleware/auth';
+import { authRoutes } from './routes/auth';
 import { healthRoutes } from './routes/health';
 import { API_PREFIX } from '@sarel/shared';
 import type { ApiDeps, ApiEnv } from './middleware/types';
@@ -14,7 +16,11 @@ export function createApp(deps: ApiDeps): Hono<ApiEnv> {
     await next();
   });
 
+  // Mengisi principal dari cookie session bila ada. Otorisasi tetap per-route.
+  app.use('*', authMiddleware(deps));
+
   app.route(API_PREFIX, healthRoutes(deps));
+  app.route(API_PREFIX, authRoutes(deps));
 
   app.notFound((c) => {
     const requestId = c.get('requestId');

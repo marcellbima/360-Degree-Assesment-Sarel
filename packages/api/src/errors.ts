@@ -7,6 +7,7 @@ const STATUS_BY_CODE: Record<ErrorCode, number> = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
+  TOO_MANY_REQUESTS: 429,
   INTERNAL_ERROR: 500,
 };
 
@@ -36,13 +37,14 @@ export function formatError(err: unknown, c: Context): Response {
 export { STATUS_BY_CODE };
 
 // Hono mengetik status sebagai union; cast aman ke ContentfulStatusCode.
-function contentStatus(status: number): 400 | 401 | 403 | 404 | 409 | 500 {
+function contentStatus(status: number): 400 | 401 | 403 | 404 | 409 | 429 | 500 {
   switch (status) {
     case 400:
     case 401:
     case 403:
     case 404:
     case 409:
+    case 429:
       return status;
     default:
       return 500;

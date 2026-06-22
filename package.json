@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "typecheck": "tsc -p packages/shared/tsconfig.json && tsc -p packages/core/tsconfig.json && tsc -p packages/db/tsconfig.json && tsc -p packages/api/tsconfig.json && tsc -p apps/worker/tsconfig.json && tsc -p apps/web/tsconfig.json",
     "test": "vitest run",
-    "build": "pnpm -r build"
+    "build": "pnpm -r build",
+    "bootstrap:superadmin": "node scripts/create-superadmin.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

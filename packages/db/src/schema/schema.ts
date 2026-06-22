@@ -107,6 +107,7 @@ export const sessions = sqliteTable(
   (t) => ({
     uxToken: uniqueIndex('ux_sessions_token_hash').on(t.tokenHash),
     ixUser: index('ix_sessions_user').on(t.userId),
+    ixExpiresAt: index('ix_sessions_expires_at').on(t.expiresAt),
   }),
 );
 
@@ -123,6 +124,9 @@ export const loginAttempts = sqliteTable(
   },
   (t) => ({
     ixCreatedAt: index('ix_login_attempts_created_at').on(t.createdAt),
+    ixUser: index('ix_login_attempts_user').on(t.userId),
+    ixIp: index('ix_login_attempts_ip').on(t.ipAddress),
+    ixUserInput: index('ix_login_attempts_user_input').on(t.userIdInput),
   }),
 );
 
@@ -502,6 +506,7 @@ export const auditLogs = sqliteTable(
     reason: text('reason'),
     ipAddress: text('ip_address'),
     userAgent: text('user_agent'),
+    requestId: text('request_id'),
     createdAt: text('created_at').notNull().default(now),
   },
   (t) => ({

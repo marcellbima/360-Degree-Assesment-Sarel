@@ -11,6 +11,7 @@
   "dependencies": {
     "@sarel/core": "workspace:*",
     "@sarel/shared": "workspace:*",
-    "hono": "^4.6.14"
+    "hono": "^4.6.14",
+    "zod": "^3.24.1"
   }
 }
