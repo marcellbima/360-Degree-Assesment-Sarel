@@ -1,4 +1,14 @@
-import type { AuthPrincipal, AuthService, AuthenticationService, HealthService } from '@sarel/core';
+import type {
+  AdminScopeService,
+  AuthPrincipal,
+  AuthService,
+  AuthenticationService,
+  BatchService,
+  HealthService,
+  OrganizationService,
+  ProgramService,
+  UserAdminService,
+} from '@sarel/core';
 
 // Konfigurasi cookie session yang ditentukan composition root.
 export interface ApiAuthConfig {
@@ -13,6 +23,12 @@ export interface ApiDeps {
   authService: AuthService;
   authenticator: AuthenticationService;
   authConfig: ApiAuthConfig;
+  // Phase 4 (master data & access administration)
+  userAdminService: UserAdminService;
+  organizationService: OrganizationService;
+  programService: ProgramService;
+  batchService: BatchService;
+  adminScopeService: AdminScopeService;
 }
 
 // Variabel context Hono yang dipakai lintas middleware dan handler.

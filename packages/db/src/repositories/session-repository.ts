@@ -1,9 +1,14 @@
-import { eq } from 'drizzle-orm';
-import type { NewSession, SessionRecord, SessionRepositoryPort } from '@sarel/core';
+import { and, count, eq, isNull } from 'drizzle-orm';
+import type {
+  NewSession,
+  SessionAdminRepositoryPort,
+  SessionRecord,
+  SessionRepositoryPort,
+} from '@sarel/core';
 import type { Db } from '../client';
 import { sessions } from '../schema/schema';
 
-export class D1SessionRepository implements SessionRepositoryPort {
+export class D1SessionRepository implements SessionRepositoryPort, SessionAdminRepositoryPort {
   private readonly db: Db;
 
   constructor(db: Db) {
@@ -40,5 +45,12 @@ export class D1SessionRepository implements SessionRepositoryPort {
 
   async revokeByTokenHash(tokenHash: string, revokedAt: string): Promise<void> {
     await this.db.update(sessions).set({ revokedAt }).where(eq(sessions.tokenHash, tokenHash)).run();
+  }
+
+  async revokeAllByUserId(userId: string, revokedAt: string): Promise<number> {
+    const active = and(eq(sessions.userId, userId), isNull(sessions.revokedAt));
+    const row = await this.db.select({ value: count() }).from(sessions).where(active).get();
+    await this.db.update(sessions).set({ revokedAt }).where(active).run();
+    return row?.value ?? 0;
   }
 }

@@ -1,5 +1,9 @@
 import { eq } from 'drizzle-orm';
-import type { AdminScopeRecord, AdminScopeRepositoryPort } from '@sarel/core';
+import type {
+  AdminScopeRecord,
+  AdminScopeRepositoryPort,
+  NewAdminScope,
+} from '@sarel/core';
 import type { Db } from '../client';
 import { adminScopes } from '../schema/schema';
 
@@ -16,12 +20,33 @@ export class D1AdminScopeRepository implements AdminScopeRepositoryPort {
       .from(adminScopes)
       .where(eq(adminScopes.adminUserId, adminUserId))
       .all();
-    return rows.map((row) => ({
-      id: row.id,
-      adminUserId: row.adminUserId,
-      programId: row.programId ?? null,
-      batchId: row.batchId ?? null,
-      organizationId: row.organizationId ?? null,
+    return rows.map((r) => ({
+      id: r.id,
+      adminUserId: r.adminUserId,
+      programId: r.programId ?? null,
+      batchId: r.batchId ?? null,
+      organizationId: r.organizationId ?? null,
     }));
+  }
+
+  async replaceForAdmin(adminUserId: string, scopes: NewAdminScope[]): Promise<void> {
+    const del = this.db.delete(adminScopes).where(eq(adminScopes.adminUserId, adminUserId));
+    if (scopes.length === 0) {
+      await del.run();
+      return;
+    }
+    const insert = this.db.insert(adminScopes).values(
+      scopes.map((s) => ({
+        id: s.id,
+        adminUserId: s.adminUserId,
+        programId: s.programId,
+        batchId: s.batchId,
+        organizationId: s.organizationId,
+        createdAt: s.createdAt,
+        createdBy: s.createdBy,
+      })),
+    );
+    // Atomic replace-all dalam satu batch (transaksi D1).
+    await this.db.batch([del, insert]);
   }
 }

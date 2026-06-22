@@ -1,37 +1,41 @@
-import { useEffect, useState } from 'react';
-import type { HealthResponse } from '@sarel/shared';
+import { useMemo, useState } from 'react';
 import { AuthProvider, useAuth } from './auth/AuthContext';
-import { AppShell } from './components/AppShell';
+import { AppShell, type NavItem } from './components/AppShell';
 import { LoginPage } from './pages/LoginPage';
+import { UsersPage } from './pages/admin/UsersPage';
+import { OrganizationsPage } from './pages/admin/OrganizationsPage';
+import { ProgramsPage } from './pages/admin/ProgramsPage';
+import { BatchesPage } from './pages/admin/BatchesPage';
+import { AdminScopesPage } from './pages/admin/AdminScopesPage';
 
-// Konten setelah login. Phase 3 hanya menampilkan ringkasan health sebagai placeholder.
 function Dashboard(): JSX.Element {
-  const [health, setHealth] = useState<HealthResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch('/api/health', { credentials: 'include' })
-      .then((res) => res.json() as Promise<HealthResponse>)
-      .then(setHealth)
-      .catch(() => setError('Tidak dapat terhubung ke API.'));
-  }, []);
-
   return (
-    <div className="rounded-xl bg-white p-4 shadow-sm">
-      <h2 className="font-medium">API Health</h2>
-      {error ? (
-        <p className="text-red-600">{error}</p>
-      ) : health ? (
-        <pre className="text-sm">{JSON.stringify(health, null, 2)}</pre>
-      ) : (
-        <p className="text-slate-400">Memuat...</p>
-      )}
+    <div className="rounded-xl border border-slate-200 bg-white p-6">
+      <h1 className="text-xl font-semibold text-slate-800">Dashboard</h1>
+      <p className="mt-2 text-sm text-slate-500">
+        Selamat datang di panel administrasi Sarel Assessment.
+      </p>
     </div>
   );
 }
 
 function Routed(): JSX.Element {
   const { user, loading } = useAuth();
+  const [view, setView] = useState('dashboard');
+
+  const items = useMemo<NavItem[]>(() => {
+    const perms = new Set(user?.permissions ?? []);
+    const roles = new Set(user?.roles ?? []);
+    const all: { item: NavItem; visible: boolean }[] = [
+      { item: { key: 'dashboard', label: 'Dashboard' }, visible: true },
+      { item: { key: 'users', label: 'Users' }, visible: perms.has('user.read') },
+      { item: { key: 'organizations', label: 'Organizations' }, visible: perms.has('organization.read') },
+      { item: { key: 'programs', label: 'Programs' }, visible: perms.has('program.read') },
+      { item: { key: 'batches', label: 'Batches' }, visible: perms.has('batch.read') },
+      { item: { key: 'scopes', label: 'Admin Scopes' }, visible: roles.has('SUPERADMIN') },
+    ];
+    return all.filter((x) => x.visible).map((x) => x.item);
+  }, [user]);
 
   if (loading) {
     return (
@@ -41,9 +45,24 @@ function Routed(): JSX.Element {
   if (!user) {
     return <LoginPage />;
   }
+
+  const active = items.some((i) => i.key === view) ? view : 'dashboard';
+
   return (
-    <AppShell>
-      <Dashboard />
+    <AppShell items={items} active={active} onSelect={setView}>
+      {active === 'users' ? (
+        <UsersPage />
+      ) : active === 'organizations' ? (
+        <OrganizationsPage />
+      ) : active === 'programs' ? (
+        <ProgramsPage />
+      ) : active === 'batches' ? (
+        <BatchesPage />
+      ) : active === 'scopes' ? (
+        <AdminScopesPage />
+      ) : (
+        <Dashboard />
+      )}
     </AppShell>
   );
 }

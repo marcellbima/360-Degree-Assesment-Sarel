@@ -22,12 +22,16 @@ export class ScopeValidationError extends Error {
   }
 }
 
+// Konsistensi referensi yang dapat diketahui dari relasi database.
+// Nilai undefined berarti tidak diperiksa; null berarti referensi tidak ber-organisasi.
+export interface ScopeConsistency {
+  batchProgramId?: string | null; // program asal batch (cek batch berasal dari program)
+  programOrganizationId?: string | null; // organisasi asal program (cek program berasal dari organization)
+  batchOrganizationId?: string | null; // organisasi asal batch via program (cek batch konsisten dengan organization)
+}
+
 // Validasi satu baris scope sebelum disimpan.
-// options.batchProgramId: program asal batch (jika batchId diisi) untuk cek konsistensi.
-export function assertValidScopeRow(
-  row: AdminScopeRow,
-  options?: { batchProgramId?: string | null },
-): void {
+export function assertValidScopeRow(row: AdminScopeRow, consistency?: ScopeConsistency): void {
   if (!row.programId && !row.batchId && !row.organizationId) {
     throw new ScopeValidationError(
       'Minimal satu dari program, batch, atau organization wajib diisi.',
@@ -36,10 +40,26 @@ export function assertValidScopeRow(
   if (
     row.programId &&
     row.batchId &&
-    options?.batchProgramId != null &&
-    options.batchProgramId !== row.programId
+    consistency?.batchProgramId != null &&
+    consistency.batchProgramId !== row.programId
   ) {
     throw new ScopeValidationError('Batch tidak berasal dari program yang ditentukan.');
+  }
+  if (
+    row.programId &&
+    row.organizationId &&
+    consistency?.programOrganizationId != null &&
+    consistency.programOrganizationId !== row.organizationId
+  ) {
+    throw new ScopeValidationError('Program tidak berasal dari organization yang ditentukan.');
+  }
+  if (
+    row.batchId &&
+    row.organizationId &&
+    consistency?.batchOrganizationId != null &&
+    consistency.batchOrganizationId !== row.organizationId
+  ) {
+    throw new ScopeValidationError('Batch tidak konsisten dengan organization yang ditentukan.');
   }
 }
 
@@ -70,4 +90,9 @@ export function isWithinScope(
     return false;
   }
   return scopes.some((row) => rowMatches(row, target));
+}
+
+// Kunci normalisasi untuk mendeteksi scope duplikat secara deterministik.
+export function scopeKey(row: AdminScopeRow): string {
+  return [row.organizationId ?? '', row.programId ?? '', row.batchId ?? ''].join('|');
 }

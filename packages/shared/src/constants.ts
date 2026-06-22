@@ -46,6 +46,18 @@ export const PERMISSION_CODES = [
 ] as const;
 export type PermissionCode = (typeof PERMISSION_CODES)[number];
 
+// Pagination administratif (Phase 4).
+export const DEFAULT_PAGE_SIZE = 20;
+export const MAX_PAGE_SIZE = 100;
+
+// Status user untuk aktivasi/deaktivasi.
+export const USER_STATUS_ACTIVE = 'ACTIVE';
+export const USER_STATUS_INACTIVE = 'INACTIVE';
+
+// Status master data untuk arsip.
+export const MASTER_STATUS_ACTIVE = 'ACTIVE';
+export const MASTER_STATUS_ARCHIVED = 'ARCHIVED';
+
 // Nama cookie session. Token asli hanya dikirim melalui cookie ini.
 export const SESSION_COOKIE_NAME = 'sarel_session';
 

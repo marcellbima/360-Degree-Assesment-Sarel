@@ -1,9 +1,10 @@
-import type { ZodType } from 'zod';
+import type { ZodTypeAny } from 'zod';
 import { AppError } from '@sarel/shared';
 
 // Memvalidasi input dengan Zod. Melempar AppError VALIDATION_ERROR yang
-// dipformat konsisten oleh error formatter.
-export function parseOrThrow<T>(schema: ZodType<T>, data: unknown): T {
+// dipformat konsisten oleh error formatter. Mengembalikan tipe output schema
+// (mis. default sudah terisi) agar konsumen mendapat nilai non-opsional.
+export function parseOrThrow<S extends ZodTypeAny>(schema: S, data: unknown): S['_output'] {
   const result = schema.safeParse(data);
   if (!result.success) {
     const fieldErrors: Record<string, string[]> = {};

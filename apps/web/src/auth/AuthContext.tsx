@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { MeResponse } from '@sarel/shared';
-import { authApi } from '../lib/api';
+import { authApi, setUnauthorizedHandler } from '../lib/api';
 
 interface AuthState {
   user: MeResponse | null;
@@ -16,12 +16,15 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Ketika API mengembalikan 401, kembalikan UI ke halaman login.
+    setUnauthorizedHandler(() => setUser(null));
     // Mengembalikan sesi yang masih hidup berdasarkan cookie. Diam saja jika gagal.
     authApi
       .me()
       .then(setUser)
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
+    return () => setUnauthorizedHandler(null);
   }, []);
 
   async function login(userId: string, password: string): Promise<void> {

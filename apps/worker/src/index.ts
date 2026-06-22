@@ -1,20 +1,32 @@
 import { createApp } from '@sarel/api';
 import {
+  AdminAuditWriter,
+  AdminScopeService,
   AuthService,
   AuthenticationService,
+  BatchService,
   ConfigError,
   HealthService,
+  OrganizationService,
   PasswordService,
+  ProgramService,
   SessionService,
   SystemClock,
+  UserAdminService,
   resolveRuntimeConfig,
   type RuntimeConfig,
 } from '@sarel/core';
 import {
+  D1AdminScopeRepository,
   D1AuditLogRepository,
+  D1BatchRepository,
   D1HealthRepository,
   D1LoginAttemptRepository,
+  D1OrganizationRepository,
+  D1ProgramRepository,
+  D1RoleRepository,
   D1SessionRepository,
+  D1UserAdminRepository,
   D1UserRepository,
   createDb,
 } from '@sarel/db';
@@ -79,6 +91,49 @@ export default {
     const authenticator = new AuthenticationService(sessions, users, sessionService, clock);
     const healthService = new HealthService(new D1HealthRepository(env.DB));
 
+    // Phase 4: master data & access administration.
+    const adminScopeRepo = new D1AdminScopeRepository(db);
+    const adminUsers = new D1UserAdminRepository(db);
+    const roleRepo = new D1RoleRepository(db);
+    const organizationRepo = new D1OrganizationRepository(db);
+    const programRepo = new D1ProgramRepository(db);
+    const batchRepo = new D1BatchRepository(db);
+    const auditWriter = new AdminAuditWriter(auditLogs, clock);
+
+    const userAdminService = new UserAdminService({
+      users: adminUsers,
+      roles: roleRepo,
+      sessions,
+      scopes: adminScopeRepo,
+      passwords,
+      clock,
+      audit: auditWriter,
+    });
+    const organizationService = new OrganizationService(
+      organizationRepo,
+      adminScopeRepo,
+      clock,
+      auditWriter,
+    );
+    const programService = new ProgramService(
+      programRepo,
+      organizationRepo,
+      adminScopeRepo,
+      clock,
+      auditWriter,
+    );
+    const batchService = new BatchService(batchRepo, programRepo, adminScopeRepo, clock, auditWriter);
+    const adminScopeService = new AdminScopeService({
+      scopes: adminScopeRepo,
+      users: adminUsers,
+      organizations: organizationRepo,
+      programs: programRepo,
+      batches: batchRepo,
+      sessions,
+      clock,
+      audit: auditWriter,
+    });
+
     const app = createApp({
       healthService,
       authService,
@@ -87,6 +142,11 @@ export default {
         cookieName: SESSION_COOKIE_NAME,
         cookieSecure: runtime.cookieSecure,
       },
+      userAdminService,
+      organizationService,
+      programService,
+      batchService,
+      adminScopeService,
     });
 
     return app.fetch(request, env, ctx);

@@ -3,6 +3,11 @@ import { formatError } from './errors';
 import { authMiddleware } from './middleware/auth';
 import { authRoutes } from './routes/auth';
 import { healthRoutes } from './routes/health';
+import { userAdminRoutes } from './routes/admin/users';
+import { organizationRoutes } from './routes/admin/organizations';
+import { programRoutes } from './routes/admin/programs';
+import { batchRoutes } from './routes/admin/batches';
+import { adminScopeRoutes } from './routes/admin/scopes';
 import { API_PREFIX } from '@sarel/shared';
 import type { ApiDeps, ApiEnv } from './middleware/types';
 
@@ -21,6 +26,11 @@ export function createApp(deps: ApiDeps): Hono<ApiEnv> {
 
   app.route(API_PREFIX, healthRoutes(deps));
   app.route(API_PREFIX, authRoutes(deps));
+  app.route(API_PREFIX, userAdminRoutes(deps));
+  app.route(API_PREFIX, organizationRoutes(deps));
+  app.route(API_PREFIX, programRoutes(deps));
+  app.route(API_PREFIX, batchRoutes(deps));
+  app.route(API_PREFIX, adminScopeRoutes(deps));
 
   app.notFound((c) => {
     const requestId = c.get('requestId');

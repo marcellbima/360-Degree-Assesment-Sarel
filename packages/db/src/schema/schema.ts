@@ -31,6 +31,7 @@ export const users = sqliteTable(
   (t) => ({
     uxUserId: uniqueIndex('ux_users_user_id').on(t.userId),
     ixNpk: index('ix_users_npk').on(t.npk),
+    ixStatus: index('ix_users_status').on(t.status),
   }),
 );
 
@@ -142,6 +143,7 @@ export const organizations = sqliteTable(
   },
   (t) => ({
     uxCode: uniqueIndex('ux_organizations_code').on(t.code),
+    ixStatus: index('ix_organizations_status').on(t.status),
   }),
 );
 
@@ -155,6 +157,7 @@ export const programs = sqliteTable(
     year: integer('year'),
     startDate: text('start_date'),
     endDate: text('end_date'),
+    organizationId: text('organization_id').references(() => organizations.id),
     status: text('status').notNull().default('DRAFT'),
     createdAt: text('created_at').notNull().default(now),
     updatedAt: text('updated_at').notNull().default(now),
@@ -162,6 +165,8 @@ export const programs = sqliteTable(
   },
   (t) => ({
     uxCode: uniqueIndex('ux_programs_code').on(t.code),
+    ixStatus: index('ix_programs_status').on(t.status),
+    ixOrganization: index('ix_programs_organization').on(t.organizationId),
   }),
 );
 
@@ -186,6 +191,8 @@ export const batches = sqliteTable(
   (t) => ({
     uxProgramCode: uniqueIndex('ux_batches_program_code').on(t.programId, t.code),
     ixProgram: index('ix_batches_program').on(t.programId),
+    ixStatus: index('ix_batches_status').on(t.status),
+    ixCode: index('ix_batches_code').on(t.code),
   }),
 );
 
