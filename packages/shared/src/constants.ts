@@ -3,6 +3,30 @@
 export const ASSESSMENT_TYPE_CODES = ['SELF', 'SUPERIOR', 'PEER', 'SUBORDINATE'] as const;
 export type AssessmentTypeCode = (typeof ASSESSMENT_TYPE_CODES)[number];
 
+// Tipe yang membutuhkan evaluator relation (SELF bersifat implisit).
+export const EVALUATOR_ASSESSMENT_TYPES = ['SUPERIOR', 'PEER', 'SUBORDINATE'] as const;
+export type EvaluatorAssessmentType = (typeof EVALUATOR_ASSESSMENT_TYPES)[number];
+
+// Import (Phase 5).
+export const IMPORT_TYPES = ['PARTICIPANT', 'EVALUATOR'] as const;
+export type ImportType = (typeof IMPORT_TYPES)[number];
+
+export const IMPORT_JOB_STATUSES = [
+  'PREVIEWED',
+  'COMMITTING',
+  'COMMITTED',
+  'FAILED',
+  'EXPIRED',
+] as const;
+export type ImportJobStatus = (typeof IMPORT_JOB_STATUSES)[number];
+
+export const IMPORT_ROW_STATUSES = ['VALID', 'SKIPPED', 'ERROR'] as const;
+export type ImportRowStatus = (typeof IMPORT_ROW_STATUSES)[number];
+
+export const MAX_IMPORT_ROWS = 1000;
+// Masa berlaku import job (default terdokumentasi): 24 jam sejak preview.
+export const IMPORT_JOB_TTL_SECONDS = 86_400;
+
 // Status assignment yang dianggap aktif (lihat partial unique index pada migration).
 export const ACTIVE_ASSIGNMENT_STATUSES = ['ASSIGNED', 'AVAILABLE', 'IN_PROGRESS'] as const;
 export type ActiveAssignmentStatus = (typeof ACTIVE_ASSIGNMENT_STATUSES)[number];

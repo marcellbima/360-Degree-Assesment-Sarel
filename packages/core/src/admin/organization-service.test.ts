@@ -9,13 +9,13 @@ import {
 import type { AdminContext } from './types';
 
 const SUPER: AdminContext = {
-  actor: { id: 'sa', userId: 'sa', roles: ['SUPERADMIN'] },
+  actor: { id: 'sa', userId: 'sa', roles: ['SUPERADMIN'], permissions: [] },
   ip: '127.0.0.1',
   userAgent: null,
   requestId: 'req',
 };
 function adminCtx(id: string): AdminContext {
-  return { actor: { id, userId: 'admin', roles: ['ADMIN'] }, ip: '127.0.0.1', userAgent: null, requestId: 'r' };
+  return { actor: { id, userId: 'admin', roles: ['ADMIN'], permissions: [] }, ip: '127.0.0.1', userAgent: null, requestId: 'r' };
 }
 
 function setup() {

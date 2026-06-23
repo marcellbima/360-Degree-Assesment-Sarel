@@ -124,3 +124,60 @@ export { ProgramService } from './admin/program-service';
 export { BatchService } from './admin/batch-service';
 export { AdminScopeService } from './admin/admin-scope-service';
 export type { AdminScopeDeps } from './admin/admin-scope-service';
+export { actorHasPermission } from './admin/types';
+export { loadScopeFilter } from './admin/scope-util';
+
+// ---- Phase 5: Participants, Evaluator Relations, Targets, Imports ----
+export type {
+  AssessmentTypeRepositoryPort,
+  AssessmentTypeRow,
+} from './ports/assessment-type-repository';
+export type {
+  NewParticipant,
+  ParticipantListFilter,
+  ParticipantPatch,
+  ParticipantRepositoryPort,
+  ParticipantRow,
+} from './ports/participant-repository';
+export type {
+  NewParticipantTarget,
+  ParticipantTargetRepositoryPort,
+  ParticipantTargetRow,
+} from './ports/participant-target-repository';
+export type {
+  NewRelation,
+  RelationListFilter,
+  RelationRepositoryPort,
+  RelationRow,
+} from './ports/evaluator-relation-repository';
+export type {
+  ImportJobRecord,
+  ImportJobRepositoryPort,
+  ImportJobRowRecord,
+  NewImportJob,
+  NewImportJobRow,
+} from './ports/import-job-repository';
+export type {
+  ImportLookupRepositoryPort,
+  ImportParticipantRef,
+  ImportUserRef,
+} from './ports/import-lookup-repository';
+export type { ImportCommitRepositoryPort } from './ports/import-commit-repository';
+export { ParticipantService } from './admin/participant-service';
+export type { ParticipantDeps } from './admin/participant-service';
+export { AssessmentTargetService } from './admin/assessment-target-service';
+export type { AssessmentTargetDeps } from './admin/assessment-target-service';
+export { EvaluatorRelationService } from './admin/evaluator-relation-service';
+export type { EvaluatorRelationDeps } from './admin/evaluator-relation-service';
+export { ImportService } from './admin/import-service';
+export type { ImportDeps } from './admin/import-service';
+export {
+  classifyEvaluatorRows,
+  classifyParticipantRows,
+  summarize,
+} from './admin/import-validators';
+export type {
+  ClassifiedRow,
+  EvaluatorRowInput,
+  ParticipantRowInput,
+} from './admin/import-validators';

@@ -13,3 +13,11 @@ export { D1UserAdminRepository } from './repositories/user-admin-repository';
 export { D1OrganizationRepository } from './repositories/organization-repository';
 export { D1ProgramRepository } from './repositories/program-repository';
 export { D1BatchRepository } from './repositories/batch-repository';
+// Phase 5
+export { D1AssessmentTypeRepository } from './repositories/assessment-type-repository';
+export { D1ParticipantRepository } from './repositories/participant-repository';
+export { D1ParticipantTargetRepository } from './repositories/participant-target-repository';
+export { D1RelationRepository } from './repositories/evaluator-relation-repository';
+export { D1ImportJobRepository } from './repositories/import-job-repository';
+export { D1ImportLookupRepository } from './repositories/import-lookup-repository';
+export { D1ImportCommitRepository } from './repositories/import-commit-repository';

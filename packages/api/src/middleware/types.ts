@@ -1,11 +1,15 @@
 import type {
   AdminScopeService,
+  AssessmentTargetService,
   AuthPrincipal,
   AuthService,
   AuthenticationService,
   BatchService,
+  EvaluatorRelationService,
   HealthService,
+  ImportService,
   OrganizationService,
+  ParticipantService,
   ProgramService,
   UserAdminService,
 } from '@sarel/core';
@@ -29,6 +33,11 @@ export interface ApiDeps {
   programService: ProgramService;
   batchService: BatchService;
   adminScopeService: AdminScopeService;
+  // Phase 5
+  participantService: ParticipantService;
+  assessmentTargetService: AssessmentTargetService;
+  evaluatorRelationService: EvaluatorRelationService;
+  importService: ImportService;
 }
 
 // Variabel context Hono yang dipakai lintas middleware dan handler.

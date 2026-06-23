@@ -7,6 +7,9 @@ import { OrganizationsPage } from './pages/admin/OrganizationsPage';
 import { ProgramsPage } from './pages/admin/ProgramsPage';
 import { BatchesPage } from './pages/admin/BatchesPage';
 import { AdminScopesPage } from './pages/admin/AdminScopesPage';
+import { ParticipantsPage } from './pages/admin/ParticipantsPage';
+import { EvaluatorRelationsPage } from './pages/admin/EvaluatorRelationsPage';
+import { ImportsPage } from './pages/admin/ImportsPage';
 
 function Dashboard(): JSX.Element {
   return (
@@ -32,6 +35,12 @@ function Routed(): JSX.Element {
       { item: { key: 'organizations', label: 'Organizations' }, visible: perms.has('organization.read') },
       { item: { key: 'programs', label: 'Programs' }, visible: perms.has('program.read') },
       { item: { key: 'batches', label: 'Batches' }, visible: perms.has('batch.read') },
+      { item: { key: 'participants', label: 'Participants' }, visible: perms.has('participant.read') },
+      { item: { key: 'relations', label: 'Evaluator Relations' }, visible: perms.has('evaluator.read') },
+      {
+        item: { key: 'imports', label: 'Imports' },
+        visible: perms.has('participant.import') || perms.has('evaluator.import'),
+      },
       { item: { key: 'scopes', label: 'Admin Scopes' }, visible: roles.has('SUPERADMIN') },
     ];
     return all.filter((x) => x.visible).map((x) => x.item);
@@ -58,6 +67,12 @@ function Routed(): JSX.Element {
         <ProgramsPage />
       ) : active === 'batches' ? (
         <BatchesPage />
+      ) : active === 'participants' ? (
+        <ParticipantsPage />
+      ) : active === 'relations' ? (
+        <EvaluatorRelationsPage />
+      ) : active === 'imports' ? (
+        <ImportsPage />
       ) : active === 'scopes' ? (
         <AdminScopesPage />
       ) : (

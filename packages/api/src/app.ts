@@ -8,6 +8,9 @@ import { organizationRoutes } from './routes/admin/organizations';
 import { programRoutes } from './routes/admin/programs';
 import { batchRoutes } from './routes/admin/batches';
 import { adminScopeRoutes } from './routes/admin/scopes';
+import { participantRoutes } from './routes/admin/participants';
+import { evaluatorRelationRoutes } from './routes/admin/evaluator-relations';
+import { importRoutes } from './routes/admin/imports';
 import { API_PREFIX } from '@sarel/shared';
 import type { ApiDeps, ApiEnv } from './middleware/types';
 
@@ -31,6 +34,9 @@ export function createApp(deps: ApiDeps): Hono<ApiEnv> {
   app.route(API_PREFIX, programRoutes(deps));
   app.route(API_PREFIX, batchRoutes(deps));
   app.route(API_PREFIX, adminScopeRoutes(deps));
+  app.route(API_PREFIX, participantRoutes(deps));
+  app.route(API_PREFIX, evaluatorRelationRoutes(deps));
+  app.route(API_PREFIX, importRoutes(deps));
 
   app.notFound((c) => {
     const requestId = c.get('requestId');

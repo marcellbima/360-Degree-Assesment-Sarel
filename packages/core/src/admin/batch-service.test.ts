@@ -11,7 +11,7 @@ import type { ProgramRow } from '../ports/program-repository';
 import type { AdminContext } from './types';
 
 const SUPER: AdminContext = {
-  actor: { id: 'sa', userId: 'sa', roles: ['SUPERADMIN'] },
+  actor: { id: 'sa', userId: 'sa', roles: ['SUPERADMIN'], permissions: [] },
   ip: '127.0.0.1',
   userAgent: null,
   requestId: 'req',

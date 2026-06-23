@@ -2,12 +2,16 @@ import { createApp } from '@sarel/api';
 import {
   AdminAuditWriter,
   AdminScopeService,
+  AssessmentTargetService,
   AuthService,
   AuthenticationService,
   BatchService,
   ConfigError,
+  EvaluatorRelationService,
   HealthService,
+  ImportService,
   OrganizationService,
+  ParticipantService,
   PasswordService,
   ProgramService,
   SessionService,
@@ -18,12 +22,19 @@ import {
 } from '@sarel/core';
 import {
   D1AdminScopeRepository,
+  D1AssessmentTypeRepository,
   D1AuditLogRepository,
   D1BatchRepository,
   D1HealthRepository,
+  D1ImportCommitRepository,
+  D1ImportJobRepository,
+  D1ImportLookupRepository,
   D1LoginAttemptRepository,
   D1OrganizationRepository,
+  D1ParticipantRepository,
+  D1ParticipantTargetRepository,
   D1ProgramRepository,
+  D1RelationRepository,
   D1RoleRepository,
   D1SessionRepository,
   D1UserAdminRepository,
@@ -134,6 +145,55 @@ export default {
       audit: auditWriter,
     });
 
+    // Phase 5: participants, evaluator relations, targets, imports.
+    const assessmentTypeRepo = new D1AssessmentTypeRepository(db);
+    const participantRepo = new D1ParticipantRepository(db);
+    const targetRepo = new D1ParticipantTargetRepository(db);
+    const relationRepo = new D1RelationRepository(db);
+    const importJobRepo = new D1ImportJobRepository(db);
+    const importLookupRepo = new D1ImportLookupRepository(db);
+    const importCommitRepo = new D1ImportCommitRepository(db);
+
+    const participantService = new ParticipantService({
+      participants: participantRepo,
+      programs: programRepo,
+      batches: batchRepo,
+      users,
+      targets: targetRepo,
+      assessmentTypes: assessmentTypeRepo,
+      scopes: adminScopeRepo,
+      clock,
+      audit: auditWriter,
+    });
+    const assessmentTargetService = new AssessmentTargetService({
+      participants: participantRepo,
+      targets: targetRepo,
+      assessmentTypes: assessmentTypeRepo,
+      scopes: adminScopeRepo,
+      clock,
+      audit: auditWriter,
+    });
+    const evaluatorRelationService = new EvaluatorRelationService({
+      relations: relationRepo,
+      participants: participantRepo,
+      assessmentTypes: assessmentTypeRepo,
+      scopes: adminScopeRepo,
+      clock,
+      audit: auditWriter,
+    });
+    const importService = new ImportService({
+      importJobs: importJobRepo,
+      commit: importCommitRepo,
+      lookups: importLookupRepo,
+      programs: programRepo,
+      assessmentTypes: assessmentTypeRepo,
+      participants: participantRepo,
+      relations: relationRepo,
+      scopes: adminScopeRepo,
+      clock,
+      audit: auditWriter,
+    });
+
     const app = createApp({
       healthService,
       authService,
@@ -147,6 +207,10 @@ export default {
       programService,
       batchService,
       adminScopeService,
+      participantService,
+      assessmentTargetService,
+      evaluatorRelationService,
+      importService,
     });
 
     return app.fetch(request, env, ctx);

@@ -6,6 +6,12 @@ export interface AdminActor {
   id: string;
   userId: string;
   roles: string[];
+  permissions: string[];
+}
+
+// Apakah aktor memiliki permission tertentu (SUPERADMIN = wildcard).
+export function actorHasPermission(actor: AdminActor, permission: string): boolean {
+  return actor.roles.includes('SUPERADMIN') || actor.permissions.includes(permission);
 }
 
 // Konteks request untuk audit log.

@@ -57,6 +57,14 @@ export function batchScopeWhere(scope: ScopeFilter): SQL | undefined {
   return or(...ors) ?? ALWAYS_FALSE;
 }
 
+// Kondisi WHERE scope untuk query yang berbasis program_participants.
+export function participantScopeWhere(scope: ScopeFilter): SQL | undefined {
+  if (scope.kind === 'all') {
+    return undefined;
+  }
+  return participantScopeMatch(scope.rows);
+}
+
 // Kecocokan scope terhadap baris program_participants (untuk visibilitas user).
 export function participantScopeMatch(rows: AdminScopeRow[]): SQL {
   const usable = rows.filter((r) => r.programId || r.batchId || r.organizationId);

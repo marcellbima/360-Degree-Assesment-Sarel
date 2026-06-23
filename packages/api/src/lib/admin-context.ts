@@ -16,7 +16,12 @@ export function requirePrincipal(c: Context<ApiEnv>): AuthPrincipal {
 export function adminContext(c: Context<ApiEnv>): AdminContext {
   const principal = requirePrincipal(c);
   return {
-    actor: { id: principal.id, userId: principal.userId, roles: principal.roles },
+    actor: {
+      id: principal.id,
+      userId: principal.userId,
+      roles: principal.roles,
+      permissions: principal.permissions,
+    },
     ip: getClientIp(c),
     userAgent: getUserAgent(c),
     requestId: c.get('requestId') ?? null,

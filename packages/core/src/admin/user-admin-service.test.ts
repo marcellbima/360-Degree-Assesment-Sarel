@@ -12,7 +12,12 @@ import {
 import type { AdminContext } from './types';
 
 function ctx(roles: string[], id = 'user_actor'): AdminContext {
-  return { actor: { id, userId: 'actor', roles }, ip: '127.0.0.1', userAgent: null, requestId: 'req' };
+  return {
+    actor: { id, userId: 'actor', roles, permissions: [] },
+    ip: '127.0.0.1',
+    userAgent: null,
+    requestId: 'req',
+  };
 }
 const SUPER = ctx(['SUPERADMIN']);
 const ADMIN = ctx(['ADMIN'], 'user_admin');

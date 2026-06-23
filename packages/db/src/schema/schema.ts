@@ -224,6 +224,12 @@ export const programParticipants = sqliteTable(
       t.userId,
     ),
     ixUser: index('ix_program_participants_user').on(t.userId),
+    ixProgram: index('ix_program_participants_program').on(t.programId),
+    ixBatch: index('ix_program_participants_batch').on(t.batchId),
+    ixStatus: index('ix_program_participants_status').on(t.status),
+    uxActiveUser: uniqueIndex('ux_program_participants_active_user')
+      .on(t.programId, t.userId)
+      .where(sql`status = 'ACTIVE'`),
   }),
 );
 
@@ -283,6 +289,7 @@ export const participantAssessmentTargets = sqliteTable(
   },
   (t) => ({
     uxTarget: uniqueIndex('ux_participant_targets').on(t.programParticipantId, t.assessmentTypeId),
+    ixType: index('ix_participant_targets_type').on(t.assessmentTypeId),
   }),
 );
 
@@ -313,6 +320,8 @@ export const evaluatorRelations = sqliteTable(
     ),
     ixParticipant: index('ix_evaluator_relations_participant').on(t.programParticipantId),
     ixEvaluator: index('ix_evaluator_relations_evaluator').on(t.evaluatorUserId),
+    ixType: index('ix_evaluator_relations_type').on(t.assessmentTypeId),
+    ixStatus: index('ix_evaluator_relations_status').on(t.status),
   }),
 );
 
@@ -522,15 +531,52 @@ export const auditLogs = sqliteTable(
   }),
 );
 
-export const importJobs = sqliteTable('import_jobs', {
-  id: text('id').primaryKey(),
-  type: text('type').notNull(),
-  status: text('status').notNull().default('PENDING'),
-  summary: text('summary'),
-  createdBy: text('created_by').references(() => users.id),
-  createdAt: text('created_at').notNull().default(now),
-  updatedAt: text('updated_at').notNull().default(now),
-});
+export const importJobs = sqliteTable(
+  'import_jobs',
+  {
+    id: text('id').primaryKey(),
+    type: text('type').notNull(),
+    status: text('status').notNull().default('PENDING'),
+    summary: text('summary'),
+    createdBy: text('created_by').references(() => users.id),
+    programId: text('program_id').references(() => programs.id),
+    fileName: text('file_name'),
+    checksum: text('checksum'),
+    totalRows: integer('total_rows').notNull().default(0),
+    validRows: integer('valid_rows').notNull().default(0),
+    skippedRows: integer('skipped_rows').notNull().default(0),
+    errorRows: integer('error_rows').notNull().default(0),
+    errorSummary: text('error_summary'),
+    committedAt: text('committed_at'),
+    expiresAt: text('expires_at'),
+    createdAt: text('created_at').notNull().default(now),
+    updatedAt: text('updated_at').notNull().default(now),
+  },
+  (t) => ({
+    ixCreatedBy: index('ix_import_jobs_created_by').on(t.createdBy),
+    ixStatus: index('ix_import_jobs_status').on(t.status),
+    ixCreatedAt: index('ix_import_jobs_created_at').on(t.createdAt),
+  }),
+);
+
+export const importJobRows = sqliteTable(
+  'import_job_rows',
+  {
+    id: text('id').primaryKey(),
+    importJobId: text('import_job_id')
+      .notNull()
+      .references(() => importJobs.id),
+    rowNumber: integer('row_number').notNull(),
+    status: text('status').notNull(),
+    message: text('message'),
+    normalized: text('normalized'),
+    createdAt: text('created_at').notNull().default(now),
+  },
+  (t) => ({
+    ixJob: index('ix_import_job_rows_job').on(t.importJobId),
+    uxJobRow: uniqueIndex('ux_import_job_rows_job_row').on(t.importJobId, t.rowNumber),
+  }),
+);
 
 export const exportJobs = sqliteTable('export_jobs', {
   id: text('id').primaryKey(),

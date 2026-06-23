@@ -2,9 +2,14 @@ import type {
   AdminScopeDto,
   AdminUserDto,
   BatchDto,
+  EvaluatorRelationDto,
+  ImportJobDto,
+  ImportPreviewResultDto,
   MeResponse,
   OrganizationDto,
   Paginated,
+  ParticipantDto,
+  ParticipantTargetsDto,
   ProgramDto,
 } from '@sarel/shared';
 
@@ -124,5 +129,54 @@ export const adminApi = {
       request<BatchDto>(`/api/admin/batches/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
     archive: (id: string) => post(`/api/admin/batches/${id}/archive`) as Promise<BatchDto>,
     activate: (id: string) => post(`/api/admin/batches/${id}/activate`) as Promise<BatchDto>,
+  },
+  participants: {
+    list: (programId: string, p: ListParams) =>
+      request<Paginated<ParticipantDto>>(`/api/admin/programs/${programId}/participants${qs(p)}`),
+    create: (programId: string, body: unknown) =>
+      request<ParticipantDto>(`/api/admin/programs/${programId}/participants`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    get: (id: string) => request<ParticipantDto>(`/api/admin/participants/${id}`),
+    update: (id: string, body: unknown) =>
+      request<ParticipantDto>(`/api/admin/participants/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+    activate: (id: string) => post(`/api/admin/participants/${id}/activate`) as Promise<ParticipantDto>,
+    archive: (id: string) => post(`/api/admin/participants/${id}/archive`) as Promise<ParticipantDto>,
+    getTargets: (id: string) => request<ParticipantTargetsDto>(`/api/admin/participants/${id}/targets`),
+    putTargets: (id: string, targets: Record<string, number>) =>
+      request<ParticipantTargetsDto>(`/api/admin/participants/${id}/targets`, {
+        method: 'PUT',
+        body: JSON.stringify({ targets }),
+      }),
+  },
+  relations: {
+    list: (programId: string, p: ListParams) =>
+      request<Paginated<EvaluatorRelationDto>>(
+        `/api/admin/programs/${programId}/evaluator-relations${qs(p)}`,
+      ),
+    create: (programId: string, body: unknown) =>
+      request<EvaluatorRelationDto>(`/api/admin/programs/${programId}/evaluator-relations`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    activate: (id: string) =>
+      post(`/api/admin/evaluator-relations/${id}/activate`) as Promise<EvaluatorRelationDto>,
+    archive: (id: string) =>
+      post(`/api/admin/evaluator-relations/${id}/archive`) as Promise<EvaluatorRelationDto>,
+  },
+  imports: {
+    previewParticipants: (body: unknown) =>
+      request<ImportPreviewResultDto>('/api/admin/imports/participants/preview', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    previewEvaluators: (body: unknown) =>
+      request<ImportPreviewResultDto>('/api/admin/imports/evaluators/preview', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    getJob: (id: string) => request<ImportPreviewResultDto>(`/api/admin/import-jobs/${id}`),
+    commit: (id: string) => post(`/api/admin/import-jobs/${id}/commit`) as Promise<ImportJobDto>,
   },
 };
