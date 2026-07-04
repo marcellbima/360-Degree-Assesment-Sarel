@@ -21,3 +21,5 @@ export { D1RelationRepository } from './repositories/evaluator-relation-reposito
 export { D1ImportJobRepository } from './repositories/import-job-repository';
 export { D1ImportLookupRepository } from './repositories/import-lookup-repository';
 export { D1ImportCommitRepository } from './repositories/import-commit-repository';
+
+export * from './postgres-client';

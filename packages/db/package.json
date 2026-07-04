@@ -17,11 +17,13 @@
     "@cloudflare/workers-types": "^4.20241218.0",
     "@types/node": "^20",
     "@types/pg": "^8",
-    "drizzle-kit": "^0.28.1"
+    "drizzle-kit": "^0.28.1",
+    "tsx": "^4.23.0"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate --config=drizzle.postgres.config.ts",
     "db:migrate": "drizzle-kit migrate --config=drizzle.postgres.config.ts",
-    "db:check": "drizzle-kit check --config=drizzle.postgres.config.ts"
+    "db:check": "drizzle-kit check --config=drizzle.postgres.config.ts",
+    "db:smoke": "tsx scripts/postgres-smoke.ts"
   }
 }
