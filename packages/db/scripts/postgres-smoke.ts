@@ -6,6 +6,7 @@ import {
   createPostgresDatabase,
   createPostgresPool,
 } from '../src/postgres-client';
+import { PostgresHealthRepository } from '../src/repositories/postgres-health-repository';
 
 const connectionString = process.env.DATABASE_URL?.trim();
 
@@ -20,9 +21,18 @@ const pool = createPostgresPool({
 });
 
 const db = createPostgresDatabase(pool);
+const healthRepository = new PostgresHealthRepository(pool);
 
 try {
   await assertPostgresConnection(pool);
+
+  const healthy = await healthRepository.ping();
+
+  if (!healthy) {
+    throw new Error(
+      'PostgreSQL health repository mengembalikan false.',
+    );
+  }
 
   const result = await db.execute(sql`
     select
@@ -45,7 +55,8 @@ try {
 
   console.log(`Database : ${row.currentDatabase}`);
   console.log(`User     : ${row.currentUser}`);
-  console.log('PostgreSQL client factory berhasil.');
+  console.log('Health   : OK');
+  console.log('PostgreSQL adapter berhasil.');
 } finally {
   await closePostgresPool(pool);
 }

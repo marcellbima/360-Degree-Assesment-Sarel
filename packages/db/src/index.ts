@@ -23,3 +23,5 @@ export { D1ImportLookupRepository } from './repositories/import-lookup-repositor
 export { D1ImportCommitRepository } from './repositories/import-commit-repository';
 
 export * from './postgres-client';
+
+export { PostgresHealthRepository } from './repositories/postgres-health-repository';
