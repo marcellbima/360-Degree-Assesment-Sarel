@@ -25,3 +25,6 @@ export { D1ImportCommitRepository } from './repositories/import-commit-repositor
 export * from './postgres-client';
 
 export { PostgresHealthRepository } from './repositories/postgres-health-repository';
+
+export { PostgresRoleRepository } from './repositories/postgres-role-repository';
+export { PostgresAssessmentTypeRepository } from './repositories/postgres-assessment-type-repository';
