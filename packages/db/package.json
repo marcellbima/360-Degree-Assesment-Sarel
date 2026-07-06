@@ -25,6 +25,7 @@
     "db:migrate": "drizzle-kit migrate --config=drizzle.postgres.config.ts",
     "db:check": "drizzle-kit check --config=drizzle.postgres.config.ts",
     "db:smoke": "tsx scripts/postgres-smoke.ts",
-    "db:smoke:read-repositories": "tsx scripts/postgres-read-repositories-smoke.ts"
+    "db:smoke:read-repositories": "tsx scripts/postgres-read-repositories-smoke.ts",
+    "db:smoke:user-repository": "tsx scripts/postgres-user-repository-smoke.ts"
   }
 }

@@ -28,3 +28,4 @@ export { PostgresHealthRepository } from './repositories/postgres-health-reposit
 
 export { PostgresRoleRepository } from './repositories/postgres-role-repository';
 export { PostgresAssessmentTypeRepository } from './repositories/postgres-assessment-type-repository';
+export { PostgresUserRepository } from './repositories/postgres-user-repository';
