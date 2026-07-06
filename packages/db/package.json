@@ -31,6 +31,7 @@
     "db:smoke:audit-log-repository": "tsx scripts/postgres-audit-log-repository-smoke.ts",
     "db:smoke:login-attempt-repository": "tsx scripts/postgres-login-attempt-repository-smoke.ts",
     "db:smoke:session-repository": "tsx scripts/postgres-session-repository-smoke.ts",
-    "db:smoke:organization-repository": "tsx scripts/postgres-organization-repository-smoke.ts"
+    "db:smoke:organization-repository": "tsx scripts/postgres-organization-repository-smoke.ts",
+    "db:smoke:program-repository": "tsx scripts/postgres-program-repository-smoke.ts"
   }
 }

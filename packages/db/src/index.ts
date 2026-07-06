@@ -34,3 +34,4 @@ export { PostgresAuditLogRepository } from './repositories/postgres-audit-log-re
 export { PostgresLoginAttemptRepository } from './repositories/postgres-login-attempt-repository';
 export { PostgresSessionRepository } from './repositories/postgres-session-repository';
 export { PostgresOrganizationRepository } from './repositories/postgres-organization-repository';
+export { PostgresProgramRepository } from './repositories/postgres-program-repository';
