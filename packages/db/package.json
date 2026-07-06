@@ -29,6 +29,7 @@
     "db:smoke:user-repository": "tsx scripts/postgres-user-repository-smoke.ts",
     "db:smoke:import-lookup-repository": "tsx scripts/postgres-import-lookup-repository-smoke.ts",
     "db:smoke:audit-log-repository": "tsx scripts/postgres-audit-log-repository-smoke.ts",
-    "db:smoke:login-attempt-repository": "tsx scripts/postgres-login-attempt-repository-smoke.ts"
+    "db:smoke:login-attempt-repository": "tsx scripts/postgres-login-attempt-repository-smoke.ts",
+    "db:smoke:session-repository": "tsx scripts/postgres-session-repository-smoke.ts"
   }
 }

@@ -32,3 +32,4 @@ export { PostgresUserRepository } from './repositories/postgres-user-repository'
 export { PostgresImportLookupRepository } from './repositories/postgres-import-lookup-repository';
 export { PostgresAuditLogRepository } from './repositories/postgres-audit-log-repository';
 export { PostgresLoginAttemptRepository } from './repositories/postgres-login-attempt-repository';
+export { PostgresSessionRepository } from './repositories/postgres-session-repository';
