@@ -10,6 +10,9 @@ import { AdminScopesPage } from './pages/admin/AdminScopesPage';
 import { ParticipantsPage } from './pages/admin/ParticipantsPage';
 import { EvaluatorRelationsPage } from './pages/admin/EvaluatorRelationsPage';
 import { ImportsPage } from './pages/admin/ImportsPage';
+import { PublicFormsPage } from './pages/admin/PublicFormsPage';
+import { PublicFormPage } from './pages/public/PublicFormPage';
+import { PublicFormsLandingPage } from './pages/public/PublicFormsLandingPage';
 
 function Dashboard(): JSX.Element {
   return (
@@ -40,6 +43,10 @@ function Routed(): JSX.Element {
       {
         item: { key: 'imports', label: 'Imports' },
         visible: perms.has('participant.import') || perms.has('evaluator.import'),
+      },
+      {
+        item: { key: 'form-builder', label: 'Form Builder' },
+        visible: perms.has('quiz.read') || perms.has('quiz.manage'),
       },
       { item: { key: 'scopes', label: 'Admin Scopes' }, visible: roles.has('SUPERADMIN') },
     ];
@@ -73,6 +80,8 @@ function Routed(): JSX.Element {
         <EvaluatorRelationsPage />
       ) : active === 'imports' ? (
         <ImportsPage />
+      ) : active === 'form-builder' ? (
+        <PublicFormsPage />
       ) : active === 'scopes' ? (
         <AdminScopesPage />
       ) : (
@@ -82,7 +91,48 @@ function Routed(): JSX.Element {
   );
 }
 
+function getPublicFormSlug(): string | null {
+  const match =
+    window.location.pathname.match(
+      /^\/forms\/([^/]+)\/?$/,
+    );
+
+  if (!match?.[1]) {
+    return null;
+  }
+
+  try {
+    return decodeURIComponent(
+      match[1],
+    );
+  } catch {
+    return null;
+  }
+}
+
 export default function App(): JSX.Element {
+  const normalizedPath =
+    window.location.pathname
+      .replace(/\/+$/, '') ||
+    '/';
+
+  if (normalizedPath === '/forms') {
+    return (
+      <PublicFormsLandingPage />
+    );
+  }
+
+  const publicFormSlug =
+    getPublicFormSlug();
+
+  if (publicFormSlug) {
+    return (
+      <PublicFormPage
+        slug={publicFormSlug}
+      />
+    );
+  }
+
   return (
     <AuthProvider>
       <Routed />

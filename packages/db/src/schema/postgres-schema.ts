@@ -5,6 +5,7 @@ import {
   date,
   index,
   integer,
+  jsonb,
   pgTable,
   text,
   timestamp,
@@ -613,3 +614,167 @@ export const systemSettings = pgTable('system_settings', {
   value: text('value'),
   updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
 });
+
+export const publicForms = pgTable(
+  'public_forms',
+  {
+    id: text('id').primaryKey(),
+    slug: text('slug').notNull(),
+    title: text('title').notNull(),
+    description: text('description'),
+    status: text('status')
+      .notNull()
+      .default('DRAFT'),
+
+    draftDefinition:
+      jsonb('draft_definition').notNull(),
+
+    publishedDefinition:
+      jsonb('published_definition'),
+
+    opensAt: timestamp('opens_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+
+    closesAt: timestamp('closes_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+
+    publishedAt: timestamp('published_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+
+    googleSheetsEnabled:
+      boolean('google_sheets_enabled')
+        .notNull()
+        .default(false),
+
+    googleSheetsWebhookUrl:
+      text('google_sheets_webhook_url'),
+
+    googleSheetId:
+      text('google_sheet_id'),
+
+    googleSheetUrl:
+      text('google_sheet_url'),
+
+    googleSheetStatus:
+      text('google_sheet_status')
+        .notNull()
+        .default('NOT_CONNECTED'),
+
+    googleSheetConnectedAt: timestamp(
+      'google_sheet_connected_at',
+      {
+        withTimezone: true,
+        mode: 'string',
+      },
+    ),
+
+    createdBy: text('created_by')
+      .notNull()
+      .references(() => users.id),
+
+    createdAt: timestamp('created_at', {
+      withTimezone: true,
+      mode: 'string',
+    })
+      .notNull()
+      .default(now),
+
+    updatedAt: timestamp('updated_at', {
+      withTimezone: true,
+      mode: 'string',
+    })
+      .notNull()
+      .default(now),
+  },
+  (table) => ({
+    uxSlug: uniqueIndex(
+      'ux_public_forms_slug',
+    ).on(table.slug),
+
+    ixStatus: index(
+      'ix_public_forms_status',
+    ).on(table.status),
+
+    ixSchedule: index(
+      'ix_public_forms_schedule',
+    ).on(
+      table.opensAt,
+      table.closesAt,
+    ),
+  }),
+);
+
+export const publicFormSubmissions =
+  pgTable(
+    'public_form_submissions',
+    {
+      id: text('id').primaryKey(),
+
+      formId: text('form_id')
+        .notNull()
+        .references(() => publicForms.id),
+
+      respondentName:
+        text('respondent_name'),
+
+      respondentEmail:
+        text('respondent_email'),
+
+      answers:
+        jsonb('answers').notNull(),
+
+      status: text('status')
+        .notNull()
+        .default('SUBMITTED'),
+
+      sheetSyncStatus:
+        text('sheet_sync_status')
+          .notNull()
+          .default('NOT_CONFIGURED'),
+
+      sheetSyncAttempts:
+        integer('sheet_sync_attempts')
+          .notNull()
+          .default(0),
+
+      sheetSyncedAt: timestamp(
+        'sheet_synced_at',
+        {
+          withTimezone: true,
+          mode: 'string',
+        },
+      ),
+
+      sheetSyncError:
+        text('sheet_sync_error'),
+
+      submittedAt: timestamp(
+        'submitted_at',
+        {
+          withTimezone: true,
+          mode: 'string',
+        },
+      )
+        .notNull()
+        .default(now),
+    },
+    (table) => ({
+      ixForm: index(
+        'ix_public_form_submissions_form',
+      ).on(table.formId),
+
+      ixSubmittedAt: index(
+        'ix_public_form_submissions_submitted_at',
+      ).on(table.submittedAt),
+
+      ixSheetSyncStatus: index(
+        'ix_public_form_submissions_sheet_sync_status',
+      ).on(table.sheetSyncStatus),
+    }),
+  );

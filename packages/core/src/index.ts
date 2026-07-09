@@ -181,3 +181,46 @@ export type {
   EvaluatorRowInput,
   ParticipantRowInput,
 } from './admin/import-validators';
+
+export type {
+  CompletePublicFormSheetSyncAttemptInput,
+  ConnectPublicFormGoogleSheetInput,
+  NewPublicForm,
+  NewPublicFormSubmission,
+  PublicFormDefinition,
+  PublicFormDraftPatch,
+  PublicFormListFilter,
+  PublicFormQuestion,
+  PublicFormQuestionType,
+  PublicFormRepositoryPort,
+  PublicFormRow,
+  PublicFormSection,
+  PublicFormSubmissionRow,
+  PublishPublicFormInput,
+} from './ports/public-form-repository';
+
+export {
+  PublicFormService,
+} from './admin/public-form-service';
+
+export type {
+  CreatePublicFormInput,
+  PublicFormListQuery,
+} from './admin/public-form-service';
+
+export type {
+  PublicFormCatalogItem,
+  PublicFormSubmissionResult,
+  PublicFormView,
+  PublishPublicFormScheduleInput,
+  SubmitPublicFormInput,
+  UpdatePublicFormDraftInput,
+} from './admin/public-form-service';
+
+
+export type {
+  CreatePublicFormGoogleSheetInput,
+  CreatePublicFormGoogleSheetResult,
+  PublicFormSheetSyncInput,
+  PublicFormSheetSyncPort,
+} from './ports/public-form-sheet-sync';

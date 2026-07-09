@@ -35,3 +35,4 @@ export { PostgresLoginAttemptRepository } from './repositories/postgres-login-at
 export { PostgresSessionRepository } from './repositories/postgres-session-repository';
 export { PostgresOrganizationRepository } from './repositories/postgres-organization-repository';
 export { PostgresProgramRepository } from './repositories/postgres-program-repository';
+export { PostgresPublicFormRepository } from './repositories/postgres-public-form-repository';

@@ -22,3 +22,4 @@ export type {
   ImportRowResultDto,
   ImportPreviewResultDto,
 } from './dto/participant';
+export * from './zod/public-form';

@@ -2,14 +2,14 @@ import type { MiddlewareHandler } from 'hono';
 import { getCookie } from 'hono/cookie';
 import { AppError } from '@sarel/shared';
 import { hasAnyRole, hasPermission } from '@sarel/core';
-import type { ApiDeps, ApiEnv } from './types';
+import type { AuthApiDeps, ApiEnv } from './types';
 
 const UNAUTHORIZED_MESSAGE = 'Sesi telah berakhir atau Anda belum masuk.';
 const FORBIDDEN_MESSAGE = 'Anda tidak memiliki akses.';
 
 // Mengisi principal dari cookie session bila ada. Tidak menolak request di sini;
 // otorisasi tetap dilakukan per-route.
-export function authMiddleware(deps: ApiDeps): MiddlewareHandler<ApiEnv> {
+export function authMiddleware(deps: AuthApiDeps): MiddlewareHandler<ApiEnv> {
   return async (c, next) => {
     const token = getCookie(c, deps.authConfig.cookieName);
     if (token) {
