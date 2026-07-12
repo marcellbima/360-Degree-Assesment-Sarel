@@ -144,6 +144,10 @@ export const adminApi = {
   },
   programs: {
     list: (p: ListParams) => request<Paginated<ProgramDto>>(`/api/admin/programs${qs(p)}`),
+    get: (id: string) =>
+      request<ProgramDto>(
+        `/api/admin/programs/${id}`,
+      ),
     create: (body: unknown) =>
       request<ProgramDto>('/api/admin/programs', { method: 'POST', body: JSON.stringify(body) }),
     update: (id: string, body: unknown) =>
