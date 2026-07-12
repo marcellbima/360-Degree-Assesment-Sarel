@@ -13,12 +13,11 @@ import {
 import { LoginPage } from './pages/LoginPage';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { AdminModulePlaceholderPage } from './pages/admin/AdminModulePlaceholderPage';
+import { ProgramFirstModulePage } from './pages/admin/ProgramFirstModulePage';
 import { UsersPage } from './pages/admin/UsersPage';
-import { OrganizationsPage } from './pages/admin/OrganizationsPage';
 import { ProgramsPage } from './pages/admin/ProgramsPage';
 import { AdminScopesPage } from './pages/admin/AdminScopesPage';
 import { ParticipantsPage } from './pages/admin/ParticipantsPage';
-import { EvaluatorRelationsPage } from './pages/admin/EvaluatorRelationsPage';
 import { PublicFormsPage } from './pages/admin/PublicFormsPage';
 import { EvaluatorDashboardPage } from './pages/evaluator/EvaluatorDashboardPage';
 import { ParticipantAssessmentPage } from './pages/participant/ParticipantAssessmentPage';
@@ -104,7 +103,7 @@ function AdminWorkspace(): JSX.Element {
             key: 'users',
             label: 'Kelola Akun',
             section:
-              'Peserta & Relasi',
+              'Peserta & Akses',
           },
           visible:
             can('user.read'),
@@ -114,33 +113,11 @@ function AdminWorkspace(): JSX.Element {
             key: 'participants',
             label: 'Kelola Peserta',
             section:
-              'Peserta & Relasi',
+              'Peserta & Akses',
           },
           visible:
             can('participant.read'),
         },
-        {
-          item: {
-            key: 'organizations',
-            label:
-              'Struktur Organisasi',
-            section:
-              'Peserta & Relasi',
-          },
-          visible:
-            can('organization.read'),
-        },
-        {
-          item: {
-            key: 'relations',
-            label: 'Relasi Penilai',
-            section:
-              'Peserta & Relasi',
-          },
-          visible:
-            can('evaluator.read'),
-        },
-
         {
           item: {
             key: 'monitoring',
@@ -240,49 +217,48 @@ function AdminWorkspace(): JSX.Element {
       {active === 'users' ? (
         <UsersPage />
       ) : active ===
-        'organizations' ? (
-        <OrganizationsPage />
-      ) : active ===
         'programs' ? (
         <ProgramsPage />
       ) : active ===
         'participants' ? (
         <ParticipantsPage />
       ) : active ===
-        'relations' ? (
-        <EvaluatorRelationsPage />
-      ) : active ===
         'form-builder' ? (
         <PublicFormsPage />
       ) : active ===
         'assignments' ? (
-        <AdminModulePlaceholderPage
+        <ProgramFirstModulePage
           title="Penugasan Assessment"
-          description="Mengatur assignment SELF dan OTHER, peserta yang dinilai, penilai, form, serta periode pengerjaan."
+          description="Pilih Program Assessment sebelum mengatur assignment SELF dan OTHER."
+          workspaceDescription="Assignment SELF dan OTHER, form, versi form, peserta, batch, relasi penilai, serta periode pengerjaan akan dikelola khusus untuk program ini."
         />
       ) : active ===
         'monitoring' ? (
-        <AdminModulePlaceholderPage
+        <ProgramFirstModulePage
           title="Monitoring Pengerjaan"
-          description="Memantau progres pengerjaan assessment, status SELF dan OTHER, tenggat waktu, serta assignment yang belum selesai."
+          description="Pilih Program Assessment untuk melihat progres peserta dan assignment."
+          workspaceDescription="Ringkasan SELF dan OTHER, status peserta, tenggat waktu, keterlambatan, serta progress setiap assignment akan ditampilkan khusus untuk program ini."
         />
       ) : active ===
         'history' ? (
-        <AdminModulePlaceholderPage
+        <ProgramFirstModulePage
           title="Histori Pengerjaan"
-          description="Menampilkan riwayat pengerjaan, submit, reset, force submit, dan perubahan status assessment."
+          description="Pilih Program Assessment sebelum menelusuri histori setiap peserta."
+          workspaceDescription="Daftar peserta akan ditampilkan terlebih dahulu, kemudian histori mulai, autosave, submit, reset, force submit, dan perubahan status dapat ditelusuri per peserta."
         />
       ) : active ===
         'answers-results' ? (
-        <AdminModulePlaceholderPage
+        <ProgramFirstModulePage
           title="Jawaban & Hasil"
-          description="Melihat jawaban peserta, skor, hasil kompetensi, serta perbandingan SELF dan OTHER."
+          description="Pilih Program Assessment sebelum melihat jawaban dan hasil peserta."
+          workspaceDescription="Hasil SELF, OTHER, perbandingan SELF vs OTHER, hasil per level penilai, serta detail jawaban akan ditampilkan per peserta dan assignment."
         />
       ) : active ===
         'reports' ? (
-        <AdminModulePlaceholderPage
+        <ProgramFirstModulePage
           title="Laporan & Export"
-          description="Menyediakan laporan assessment dan fitur export data sesuai program, peserta, unit, dan periode."
+          description="Pilih Program Assessment yang akan dibuatkan laporan atau export."
+          workspaceDescription="Laporan peserta, relasi, assignment, monitoring, hasil individual, hasil kelompok, dan export akan dibatasi hanya untuk program yang dipilih."
         />
       ) : active ===
         'scopes' ? (
