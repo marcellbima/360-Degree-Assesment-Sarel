@@ -224,3 +224,13 @@ export type {
   PublicFormSheetSyncInput,
   PublicFormSheetSyncPort,
 } from './ports/public-form-sheet-sync';
+
+
+export type {
+  DemoWorkspaceRepositoryPort,
+  DemoWorkspaceStatus,
+} from './ports/demo-workspace-repository';
+
+export {
+  DemoWorkspaceService,
+} from './admin/demo-workspace-service';

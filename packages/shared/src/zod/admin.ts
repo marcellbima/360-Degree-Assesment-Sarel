@@ -34,7 +34,7 @@ export const createUserSchema = z.object({
   unit: optionalText(120),
   division: optionalText(120),
   organizationId: optionalText(120),
-  roles: z.array(roleEnum).min(1).max(3).optional(),
+  roles: z.array(roleEnum).min(1).max(4).optional(),
 });
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 
@@ -53,7 +53,7 @@ export const updateUserSchema = z
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 
 export const setUserRolesSchema = z.object({
-  roles: z.array(roleEnum).min(1, 'Minimal satu role.').max(3),
+  roles: z.array(roleEnum).min(1, 'Minimal satu role.').max(4),
 });
 export type SetUserRolesInput = z.infer<typeof setUserRolesSchema>;
 

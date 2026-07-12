@@ -1,9 +1,13 @@
 import { Hono } from 'hono';
+import type {
+  DemoWorkspaceService,
+} from '@sarel/core';
 import { API_PREFIX } from '@sarel/shared';
 
 import { formatError } from './errors';
 import { authMiddleware } from './middleware/auth';
 import type {
+  ApiDeps,
   ApiEnv,
   AuthApiDeps,
   HealthApiDeps,
@@ -15,13 +19,38 @@ import {
   publicFormAdminRoutes,
 } from './routes/admin/public-forms';
 import {
+  userAdminRoutes,
+} from './routes/admin/users';
+import {
+  organizationRoutes,
+} from './routes/admin/organizations';
+import {
+  programRoutes,
+} from './routes/admin/programs';
+import {
+  batchRoutes,
+} from './routes/admin/batches';
+import {
+  demoWorkspaceRoutes,
+} from './routes/admin/demo-workspace';
+import {
   publicFormPublicRoutes,
 } from './routes/public-forms';
 
 export type AuthHealthApiDeps =
   AuthApiDeps &
   HealthApiDeps &
-  PublicFormApiDeps;
+  PublicFormApiDeps &
+  Pick<
+    ApiDeps,
+    | 'userAdminService'
+    | 'organizationService'
+    | 'programService'
+    | 'batchService'
+  > & {
+    demoWorkspaceService:
+      DemoWorkspaceService;
+  };
 
 export function createAuthApiApp(
   deps: AuthHealthApiDeps,
@@ -50,6 +79,31 @@ export function createAuthApiApp(
   app.route(
     API_PREFIX,
     authRoutes(deps),
+  );
+
+  app.route(
+    API_PREFIX,
+    userAdminRoutes(deps),
+  );
+
+  app.route(
+    API_PREFIX,
+    organizationRoutes(deps),
+  );
+
+  app.route(
+    API_PREFIX,
+    programRoutes(deps),
+  );
+
+  app.route(
+    API_PREFIX,
+    batchRoutes(deps),
+  );
+
+  app.route(
+    API_PREFIX,
+    demoWorkspaceRoutes(deps),
   );
 
   app.route(

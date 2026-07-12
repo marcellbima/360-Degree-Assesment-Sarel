@@ -5,7 +5,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { Modal, ConfirmDialog } from '../../components/Modal';
 
 const PAGE_SIZE = 20;
-const ROLE_OPTIONS = ['SUPERADMIN', 'ADMIN', 'USER'];
+const ROLE_OPTIONS = ['SUPERADMIN', 'ADMIN', 'EVALUATOR', 'USER'];
 
 type ModalKind = 'create' | 'edit' | 'reset' | 'roles' | null;
 

@@ -13,6 +13,13 @@ import type {
   ProgramDto,
 } from '@sarel/shared';
 
+export interface DemoWorkspaceStatus {
+  loaded: boolean;
+  organizationCount: number;
+  programCount: number;
+  batchCount: number;
+}
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -71,6 +78,29 @@ const post = (path: string, body?: unknown): Promise<unknown> =>
   request(path, { method: 'POST', body: body === undefined ? undefined : JSON.stringify(body) });
 
 export const adminApi = {
+  demoWorkspace: {
+    status: () =>
+      request<DemoWorkspaceStatus>(
+        '/api/admin/demo-workspace/status',
+      ),
+
+    load: () =>
+      request<DemoWorkspaceStatus>(
+        '/api/admin/demo-workspace/load',
+        {
+          method: 'POST',
+        },
+      ),
+
+    clear: () =>
+      request<DemoWorkspaceStatus>(
+        '/api/admin/demo-workspace',
+        {
+          method: 'DELETE',
+        },
+      ),
+  },
+
   users: {
     list: (p: ListParams) => request<Paginated<AdminUserDto>>(`/api/admin/users${qs(p)}`),
     create: (body: unknown) =>

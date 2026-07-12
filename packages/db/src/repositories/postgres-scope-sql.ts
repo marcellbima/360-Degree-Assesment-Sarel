@@ -6,10 +6,12 @@ import {
   sql,
   type SQL,
 } from 'drizzle-orm';
-import type { ScopeFilter } from '@sarel/core';
+import type { AdminScopeRow, ScopeFilter } from '@sarel/core';
 
 import {
+  batches,
   organizations,
+  programParticipants,
   programs,
 } from '../schema/postgres-schema';
 
@@ -82,4 +84,138 @@ export function programScopeWhere(
   });
 
   return or(...conditions) ?? ALWAYS_FALSE;
+}
+
+
+
+export function batchScopeWhere(
+  scope: ScopeFilter,
+): SQL | undefined {
+  if (scope.kind === 'all') {
+    return undefined;
+  }
+
+  const usableRows =
+    scope.rows.filter(
+      (row) =>
+        row.programId ||
+        row.batchId ||
+        row.organizationId,
+    );
+
+  if (usableRows.length === 0) {
+    return ALWAYS_FALSE;
+  }
+
+  const conditions =
+    usableRows.map((row) => {
+      const matches: SQL[] = [];
+
+      if (row.programId) {
+        matches.push(
+          eq(
+            batches.programId,
+            row.programId,
+          ),
+        );
+      }
+
+      if (row.batchId) {
+        matches.push(
+          eq(
+            batches.id,
+            row.batchId,
+          ),
+        );
+      }
+
+      if (row.organizationId) {
+        matches.push(
+          eq(
+            programs.organizationId,
+            row.organizationId,
+          ),
+        );
+      }
+
+      return (
+        and(...matches) ??
+        ALWAYS_FALSE
+      );
+    });
+
+  return (
+    or(...conditions) ??
+    ALWAYS_FALSE
+  );
+}
+
+export function participantScopeMatch(
+  rows: AdminScopeRow[],
+): SQL {
+  const usableRows =
+    rows.filter(
+      (row) =>
+        row.programId ||
+        row.batchId ||
+        row.organizationId,
+    );
+
+  if (usableRows.length === 0) {
+    return ALWAYS_FALSE;
+  }
+
+  const conditions =
+    usableRows.map((row) => {
+      const matches: SQL[] = [];
+
+      if (row.programId) {
+        matches.push(
+          eq(
+            programParticipants.programId,
+            row.programId,
+          ),
+        );
+      }
+
+      if (row.batchId) {
+        matches.push(
+          eq(
+            programParticipants.batchId,
+            row.batchId,
+          ),
+        );
+      }
+
+      if (row.organizationId) {
+        matches.push(
+          eq(
+            programParticipants.organizationId,
+            row.organizationId,
+          ),
+        );
+      }
+
+      return (
+        and(...matches) ??
+        ALWAYS_FALSE
+      );
+    });
+
+  return (
+    or(...conditions) ??
+    ALWAYS_FALSE
+  );
+}
+
+export function participantScopeWhere(
+  scope: ScopeFilter,
+): SQL | undefined {
+  if (scope.kind === 'all') {
+    return undefined;
+  }
+
+  return participantScopeMatch(
+    scope.rows,
+  );
 }

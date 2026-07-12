@@ -1,18 +1,35 @@
 import { SUPERADMIN_ROLE } from '../auth/rbac';
 
-export const MANAGEABLE_ROLES = ['SUPERADMIN', 'ADMIN', 'USER'] as const;
+export const MANAGEABLE_ROLES = ['SUPERADMIN', 'ADMIN', 'EVALUATOR', 'USER'] as const;
 
 // Role mana yang boleh ditetapkan/dicabut oleh aktor.
 // - role SUPERADMIN dan ADMIN hanya boleh dikelola oleh SUPERADMIN.
-// - role USER boleh dikelola oleh SUPERADMIN atau ADMIN (ADMIN tetap dibatasi scope di lapisan lain).
-export function canManageRole(actorRoles: string[], targetRole: string): boolean {
-  const isSuper = actorRoles.includes(SUPERADMIN_ROLE);
-  if (targetRole === 'SUPERADMIN' || targetRole === 'ADMIN') {
+// - role EVALUATOR dan USER boleh dikelola oleh SUPERADMIN atau ADMIN.
+//   ADMIN tetap dibatasi scope pada lapisan lain.
+export function canManageRole(
+  actorRoles: string[],
+  targetRole: string,
+): boolean {
+  const isSuper =
+    actorRoles.includes(SUPERADMIN_ROLE);
+
+  if (
+    targetRole === 'SUPERADMIN' ||
+    targetRole === 'ADMIN'
+  ) {
     return isSuper;
   }
-  if (targetRole === 'USER') {
-    return isSuper || actorRoles.includes('ADMIN');
+
+  if (
+    targetRole === 'EVALUATOR' ||
+    targetRole === 'USER'
+  ) {
+    return (
+      isSuper ||
+      actorRoles.includes('ADMIN')
+    );
   }
+
   return false;
 }
 

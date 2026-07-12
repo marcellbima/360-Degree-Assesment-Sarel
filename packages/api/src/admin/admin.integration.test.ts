@@ -42,8 +42,18 @@ async function withRoles(role: string): Promise<{ h: Harness; cookie: string }> 
   const h = await buildHarness();
   await h.seedUser({ id: 'user_super', userId: 'super', roleCodes: ['SUPERADMIN'] });
   await h.seedUser({ id: 'user_admin', userId: 'admin', roleCodes: ['ADMIN'] });
+  await h.seedUser({
+    id: 'user_evaluator',
+    userId: 'evaluator',
+    roleCodes: ['EVALUATOR'],
+  });
   await h.seedUser({ id: 'user_plain', userId: 'plain', roleCodes: ['USER'] });
-  const map: Record<string, string> = { SUPERADMIN: 'super', ADMIN: 'admin', USER: 'plain' };
+  const map: Record<string, string> = {
+    SUPERADMIN: 'super',
+    ADMIN: 'admin',
+    EVALUATOR: 'evaluator',
+    USER: 'plain',
+  };
   const cookie = await h.login(map[role], 'Rahasia123');
   return { h, cookie };
 }

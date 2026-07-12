@@ -1,23 +1,36 @@
 import { serve } from '@hono/node-server';
 import { createAuthApiApp } from '@sarel/api';
 import {
+  AdminAuditWriter,
   AuthService,
+  BatchService,
   AuthenticationService,
+  DemoWorkspaceService,
   HealthService,
+  OrganizationService,
   PasswordService,
+  ProgramService,
   PublicFormService,
   SessionService,
   SystemClock,
+  UserAdminService,
   resolveRuntimeConfig,
 } from '@sarel/core';
 import {
   createPostgresDatabase,
   createPostgresPool,
+  PostgresAdminScopeRepository,
   PostgresAuditLogRepository,
+  PostgresBatchRepository,
+  PostgresDemoWorkspaceRepository,
   PostgresHealthRepository,
   PostgresLoginAttemptRepository,
+  PostgresOrganizationRepository,
+  PostgresProgramRepository,
   PostgresPublicFormRepository,
+  PostgresRoleRepository,
   PostgresSessionRepository,
+  PostgresUserAdminRepository,
   PostgresUserRepository,
 } from '@sarel/db';
 import {
@@ -143,10 +156,93 @@ const publicFormService =
     publicFormSheetSync,
   );
 
+const adminAudit =
+  new AdminAuditWriter(
+    auditLogs,
+    clock,
+  );
+
+const adminScopes =
+  new PostgresAdminScopeRepository(
+    db,
+  );
+
+const userAdminService =
+  new UserAdminService({
+    users:
+      new PostgresUserAdminRepository(
+        db,
+      ),
+    roles:
+      new PostgresRoleRepository(
+        db,
+      ),
+    sessions,
+    scopes: adminScopes,
+    passwords,
+    clock,
+    audit: adminAudit,
+  });
+
+const organizationRepository =
+  new PostgresOrganizationRepository(
+    db,
+  );
+
+const programRepository =
+  new PostgresProgramRepository(
+    db,
+  );
+
+const batchRepository =
+  new PostgresBatchRepository(
+    db,
+  );
+
+const organizationService =
+  new OrganizationService(
+    organizationRepository,
+    adminScopes,
+    clock,
+    adminAudit,
+  );
+
+const programService =
+  new ProgramService(
+    programRepository,
+    organizationRepository,
+    adminScopes,
+    clock,
+    adminAudit,
+  );
+
+const batchService =
+  new BatchService(
+    batchRepository,
+    programRepository,
+    adminScopes,
+    clock,
+    adminAudit,
+  );
+
+const demoWorkspaceService =
+  new DemoWorkspaceService(
+    new PostgresDemoWorkspaceRepository(
+      db,
+    ),
+    clock,
+    adminAudit,
+  );
+
 const app =
   createAuthApiApp({
     healthService,
     publicFormService,
+    userAdminService,
+    organizationService,
+    programService,
+    batchService,
+    demoWorkspaceService,
     authService,
     authenticator,
     authConfig: {

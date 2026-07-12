@@ -36,3 +36,12 @@ export { PostgresSessionRepository } from './repositories/postgres-session-repos
 export { PostgresOrganizationRepository } from './repositories/postgres-organization-repository';
 export { PostgresProgramRepository } from './repositories/postgres-program-repository';
 export { PostgresPublicFormRepository } from './repositories/postgres-public-form-repository';
+
+export { PostgresUserAdminRepository } from './repositories/postgres-user-admin-repository';
+export { PostgresAdminScopeRepository } from './repositories/postgres-admin-scope-repository';
+export { PostgresBatchRepository } from './repositories/postgres-batch-repository';
+export {
+  DEMO_WORKSPACE_CODES,
+  DEMO_WORKSPACE_IDS,
+  PostgresDemoWorkspaceRepository,
+} from './repositories/postgres-demo-workspace-repository';
