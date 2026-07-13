@@ -33,6 +33,7 @@
     "db:smoke:session-repository": "tsx scripts/postgres-session-repository-smoke.ts",
     "db:smoke:organization-repository": "tsx scripts/postgres-organization-repository-smoke.ts",
     "db:smoke:program-repository": "tsx scripts/postgres-program-repository-smoke.ts",
-    "bootstrap:accounts": "tsx scripts/bootstrap-initial-accounts.ts"
+    "bootstrap:accounts": "tsx scripts/bootstrap-initial-accounts.ts",
+    "bootstrap:master-data": "tsx scripts/bootstrap-master-data.ts"
   }
 }

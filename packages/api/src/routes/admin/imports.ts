@@ -23,7 +23,12 @@ function requireImportAccess(): MiddlewareHandler<ApiEnv> {
   };
 }
 
-export function importRoutes(deps: ApiDeps): Hono<ApiEnv> {
+export function importRoutes(
+  deps: Pick<
+    ApiDeps,
+    'importService'
+  >,
+): Hono<ApiEnv> {
   const router = new Hono<ApiEnv>();
   const svc = deps.importService;
 

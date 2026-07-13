@@ -10,6 +10,7 @@ import {
   AuthenticationService,
   DemoWorkspaceService,
   HealthService,
+  ImportService,
   OrganizationService,
   PasswordService,
   ProgramService,
@@ -31,6 +32,9 @@ import {
   PostgresBatchRepository,
   PostgresDemoWorkspaceRepository,
   PostgresHealthRepository,
+  PostgresImportCommitRepository,
+  PostgresImportJobRepository,
+  PostgresImportLookupRepository,
   PostgresLoginAttemptRepository,
   PostgresOrganizationRepository,
   PostgresProgramRepository,
@@ -226,6 +230,21 @@ const evaluatorRelationRepository =
     db,
   );
 
+const importJobRepository =
+  new PostgresImportJobRepository(
+    db,
+  );
+
+const importLookupRepository =
+  new PostgresImportLookupRepository(
+    db,
+  );
+
+const importCommitRepository =
+  new PostgresImportCommitRepository(
+    db,
+  );
+
 const organizationService =
   new OrganizationService(
     organizationRepository,
@@ -302,6 +321,29 @@ const evaluatorRelationService =
       adminAudit,
   });
 
+const importService =
+  new ImportService({
+    importJobs:
+      importJobRepository,
+    commit:
+      importCommitRepository,
+    lookups:
+      importLookupRepository,
+    programs:
+      programRepository,
+    assessmentTypes:
+      assessmentTypeRepository,
+    participants:
+      participantRepository,
+    relations:
+      evaluatorRelationRepository,
+    scopes:
+      adminScopes,
+    clock,
+    audit:
+      adminAudit,
+  });
+
 const demoWorkspaceService =
   new DemoWorkspaceService(
     new PostgresDemoWorkspaceRepository(
@@ -322,6 +364,7 @@ const app =
     participantService,
     assessmentTargetService,
     evaluatorRelationService,
+    importService,
     demoWorkspaceService,
     authService,
     authenticator,

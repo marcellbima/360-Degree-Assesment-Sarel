@@ -28,3 +28,6 @@ scripts/*.generated.sql
 
 # Local self-hosted environment
 .env.local
+
+# Local smoke-test artifacts
+.tmp/

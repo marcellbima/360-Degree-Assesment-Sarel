@@ -37,6 +37,9 @@ import {
   evaluatorRelationRoutes,
 } from './routes/admin/evaluator-relations';
 import {
+  importRoutes,
+} from './routes/admin/imports';
+import {
   demoWorkspaceRoutes,
 } from './routes/admin/demo-workspace';
 import {
@@ -56,6 +59,7 @@ export type AuthHealthApiDeps =
     | 'participantService'
     | 'assessmentTargetService'
     | 'evaluatorRelationService'
+    | 'importService'
   > & {
     demoWorkspaceService:
       DemoWorkspaceService;
@@ -118,6 +122,11 @@ export function createAuthApiApp(
   app.route(
     API_PREFIX,
     evaluatorRelationRoutes(deps),
+  );
+
+  app.route(
+    API_PREFIX,
+    importRoutes(deps),
   );
 
   app.route(
