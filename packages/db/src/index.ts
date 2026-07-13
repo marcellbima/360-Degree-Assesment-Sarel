@@ -28,6 +28,9 @@ export { PostgresHealthRepository } from './repositories/postgres-health-reposit
 
 export { PostgresRoleRepository } from './repositories/postgres-role-repository';
 export { PostgresAssessmentTypeRepository } from './repositories/postgres-assessment-type-repository';
+export { PostgresEvaluatorRelationRepository } from './repositories/postgres-evaluator-relation-repository';
+export { PostgresParticipantTargetRepository } from './repositories/postgres-participant-target-repository';
+export { PostgresParticipantRepository } from './repositories/postgres-participant-repository';
 export { PostgresUserRepository } from './repositories/postgres-user-repository';
 export { PostgresImportLookupRepository } from './repositories/postgres-import-lookup-repository';
 export { PostgresAuditLogRepository } from './repositories/postgres-audit-log-repository';

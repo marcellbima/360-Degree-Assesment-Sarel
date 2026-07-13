@@ -31,6 +31,12 @@ import {
   batchRoutes,
 } from './routes/admin/batches';
 import {
+  participantRoutes,
+} from './routes/admin/participants';
+import {
+  evaluatorRelationRoutes,
+} from './routes/admin/evaluator-relations';
+import {
   demoWorkspaceRoutes,
 } from './routes/admin/demo-workspace';
 import {
@@ -47,6 +53,9 @@ export type AuthHealthApiDeps =
     | 'organizationService'
     | 'programService'
     | 'batchService'
+    | 'participantService'
+    | 'assessmentTargetService'
+    | 'evaluatorRelationService'
   > & {
     demoWorkspaceService:
       DemoWorkspaceService;
@@ -99,6 +108,16 @@ export function createAuthApiApp(
   app.route(
     API_PREFIX,
     batchRoutes(deps),
+  );
+
+  app.route(
+    API_PREFIX,
+    participantRoutes(deps),
+  );
+
+  app.route(
+    API_PREFIX,
+    evaluatorRelationRoutes(deps),
   );
 
   app.route(

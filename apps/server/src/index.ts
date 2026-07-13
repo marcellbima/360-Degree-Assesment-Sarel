@@ -2,6 +2,9 @@ import { serve } from '@hono/node-server';
 import { createAuthApiApp } from '@sarel/api';
 import {
   AdminAuditWriter,
+  AssessmentTargetService,
+  EvaluatorRelationService,
+  ParticipantService,
   AuthService,
   BatchService,
   AuthenticationService,
@@ -20,6 +23,10 @@ import {
   createPostgresDatabase,
   createPostgresPool,
   PostgresAdminScopeRepository,
+  PostgresAssessmentTypeRepository,
+  PostgresEvaluatorRelationRepository,
+  PostgresParticipantRepository,
+  PostgresParticipantTargetRepository,
   PostgresAuditLogRepository,
   PostgresBatchRepository,
   PostgresDemoWorkspaceRepository,
@@ -199,6 +206,26 @@ const batchRepository =
     db,
   );
 
+const participantRepository =
+  new PostgresParticipantRepository(
+    db,
+  );
+
+const participantTargetRepository =
+  new PostgresParticipantTargetRepository(
+    db,
+  );
+
+const assessmentTypeRepository =
+  new PostgresAssessmentTypeRepository(
+    db,
+  );
+
+const evaluatorRelationRepository =
+  new PostgresEvaluatorRelationRepository(
+    db,
+  );
+
 const organizationService =
   new OrganizationService(
     organizationRepository,
@@ -225,6 +252,56 @@ const batchService =
     adminAudit,
   );
 
+const participantService =
+  new ParticipantService({
+    participants:
+      participantRepository,
+    programs:
+      programRepository,
+    batches:
+      batchRepository,
+    users,
+    targets:
+      participantTargetRepository,
+    assessmentTypes:
+      assessmentTypeRepository,
+    scopes:
+      adminScopes,
+    clock,
+    audit:
+      adminAudit,
+  });
+
+const assessmentTargetService =
+  new AssessmentTargetService({
+    participants:
+      participantRepository,
+    targets:
+      participantTargetRepository,
+    assessmentTypes:
+      assessmentTypeRepository,
+    scopes:
+      adminScopes,
+    clock,
+    audit:
+      adminAudit,
+  });
+
+const evaluatorRelationService =
+  new EvaluatorRelationService({
+    relations:
+      evaluatorRelationRepository,
+    participants:
+      participantRepository,
+    assessmentTypes:
+      assessmentTypeRepository,
+    scopes:
+      adminScopes,
+    clock,
+    audit:
+      adminAudit,
+  });
+
 const demoWorkspaceService =
   new DemoWorkspaceService(
     new PostgresDemoWorkspaceRepository(
@@ -242,6 +319,9 @@ const app =
     organizationService,
     programService,
     batchService,
+    participantService,
+    assessmentTargetService,
+    evaluatorRelationService,
     demoWorkspaceService,
     authService,
     authenticator,

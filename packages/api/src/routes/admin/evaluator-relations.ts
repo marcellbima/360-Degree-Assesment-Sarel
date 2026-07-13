@@ -5,7 +5,12 @@ import { adminContext } from '../../lib/admin-context';
 import { requireAuthenticated, requirePermission } from '../../middleware/auth';
 import type { ApiDeps, ApiEnv } from '../../middleware/types';
 
-export function evaluatorRelationRoutes(deps: ApiDeps): Hono<ApiEnv> {
+export function evaluatorRelationRoutes(
+  deps: Pick<
+    ApiDeps,
+    'evaluatorRelationService'
+  >,
+): Hono<ApiEnv> {
   const router = new Hono<ApiEnv>();
   const svc = deps.evaluatorRelationService;
 
