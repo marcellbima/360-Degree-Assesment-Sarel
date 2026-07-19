@@ -35,8 +35,12 @@ export const users = pgTable(
     status: text('status').notNull().default('ACTIVE'),
     mustChangePassword: boolean('must_change_password').notNull().default(false),
     lastLoginAt: timestamp('last_login_at', { withTimezone: true, mode: 'string' }),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
     createdBy: text('created_by'),
   },
   (t) => ({
@@ -52,8 +56,12 @@ export const roles = pgTable(
     id: text('id').primaryKey(),
     code: text('code').notNull(),
     name: text('name').notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     uxCode: uniqueIndex('ux_roles_code').on(t.code),
@@ -113,7 +121,9 @@ export const sessions = pgTable(
       .references(() => users.id),
     tokenHash: text('token_hash').notNull(),
     expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
     revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
   },
   (t) => ({
@@ -132,7 +142,9 @@ export const loginAttempts = pgTable(
     success: boolean('success').notNull().default(false),
     ipAddress: text('ip_address'),
     userAgent: text('user_agent'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     ixCreatedAt: index('ix_login_attempts_created_at').on(t.createdAt),
@@ -149,8 +161,12 @@ export const organizations = pgTable(
     code: text('code').notNull(),
     name: text('name').notNull(),
     status: text('status').notNull().default('ACTIVE'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     uxCode: uniqueIndex('ux_organizations_code').on(t.code),
@@ -170,8 +186,12 @@ export const programs = pgTable(
     endDate: date('end_date', { mode: 'string' }),
     organizationId: text('organization_id').references(() => organizations.id),
     status: text('status').notNull().default('DRAFT'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
     createdBy: text('created_by'),
   },
   (t) => ({
@@ -195,8 +215,12 @@ export const batches = pgTable(
     startDate: date('start_date', { mode: 'string' }),
     endDate: date('end_date', { mode: 'string' }),
     status: text('status').notNull().default('DRAFT'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
     createdBy: text('created_by'),
   },
   (t) => ({
@@ -223,8 +247,12 @@ export const programParticipants = pgTable(
     position: text('position'),
     unit: text('unit'),
     status: text('status').notNull().default('ACTIVE'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     uxEnrollment: uniqueIndex('ux_program_participants_enrollment').on(
@@ -252,7 +280,9 @@ export const adminScopes = pgTable(
     programId: text('program_id').references(() => programs.id),
     batchId: text('batch_id').references(() => batches.id),
     organizationId: text('organization_id').references(() => organizations.id),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
     createdBy: text('created_by'),
   },
   (t) => ({
@@ -278,8 +308,12 @@ export const assessmentTypes = pgTable(
     requiresEvaluatorRelation: boolean('requires_evaluator_relation').notNull().default(true),
     defaultTarget: integer('default_target').notNull().default(0),
     status: text('status').notNull().default('ACTIVE'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     uxCode: uniqueIndex('ux_assessment_types_code').on(t.code),
@@ -297,8 +331,12 @@ export const participantAssessmentTargets = pgTable(
       .notNull()
       .references(() => assessmentTypes.id),
     targetCount: integer('target_count').notNull().default(0),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     uxTarget: uniqueIndex('ux_participant_targets').on(t.programParticipantId, t.assessmentTypeId),
@@ -322,8 +360,12 @@ export const evaluatorRelations = pgTable(
     status: text('status').notNull().default('ACTIVE'),
     assignedAt: timestamp('assigned_at', { withTimezone: true, mode: 'string' }),
     assignedBy: text('assigned_by'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     uxRelation: uniqueIndex('ux_evaluator_relations').on(
@@ -338,6 +380,164 @@ export const evaluatorRelations = pgTable(
   }),
 );
 
+export const publicForms = pgTable(
+  'public_forms',
+  {
+    id: text('id').primaryKey(),
+    slug: text('slug').notNull(),
+    title: text('title').notNull(),
+    description: text('description'),
+    status: text('status').notNull().default('DRAFT'),
+
+    draftDefinition: jsonb('draft_definition').notNull(),
+
+    publishedDefinition: jsonb('published_definition'),
+
+    opensAt: timestamp('opens_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+
+    closesAt: timestamp('closes_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+
+    publishedAt: timestamp('published_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+
+    googleSheetsEnabled: boolean('google_sheets_enabled').notNull().default(false),
+
+    googleSheetsWebhookUrl: text('google_sheets_webhook_url'),
+
+    googleSheetId: text('google_sheet_id'),
+
+    googleSheetUrl: text('google_sheet_url'),
+
+    googleSheetStatus: text('google_sheet_status').notNull().default('NOT_CONNECTED'),
+
+    googleSheetConnectedAt: timestamp('google_sheet_connected_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+
+    createdBy: text('created_by')
+      .notNull()
+      .references(() => users.id),
+
+    createdAt: timestamp('created_at', {
+      withTimezone: true,
+      mode: 'string',
+    })
+      .notNull()
+      .default(now),
+
+    updatedAt: timestamp('updated_at', {
+      withTimezone: true,
+      mode: 'string',
+    })
+      .notNull()
+      .default(now),
+  },
+  (table) => ({
+    uxSlug: uniqueIndex('ux_public_forms_slug').on(table.slug),
+
+    ixStatus: index('ix_public_forms_status').on(table.status),
+
+    ixSchedule: index('ix_public_forms_schedule').on(table.opensAt, table.closesAt),
+  }),
+);
+
+export const publicFormVersions = pgTable(
+  'public_form_versions',
+  {
+    id: text('id').primaryKey(),
+    publicFormId: text('public_form_id')
+      .notNull()
+      .references(() => publicForms.id),
+    versionNumber: integer('version_number').notNull(),
+    definition: jsonb('definition').notNull(),
+    publishedAt: timestamp('published_at', {
+      withTimezone: true,
+      mode: 'string',
+    }).notNull(),
+    createdBy: text('created_by')
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp('created_at', {
+      withTimezone: true,
+      mode: 'string',
+    })
+      .notNull()
+      .default(now),
+  },
+  (t) => ({
+    uxFormVersion: uniqueIndex('ux_public_form_versions_form_version').on(
+      t.publicFormId,
+      t.versionNumber,
+    ),
+    ixForm: index('ix_public_form_versions_form').on(t.publicFormId),
+    ixPublishedAt: index('ix_public_form_versions_published_at').on(t.publishedAt),
+  }),
+);
+
+export const assessmentAssignmentGroups = pgTable(
+  'assessment_assignment_groups',
+  {
+    id: text('id').primaryKey(),
+    programId: text('program_id')
+      .notNull()
+      .references(() => programs.id),
+    publicFormVersionId: text('public_form_version_id')
+      .notNull()
+      .references(() => publicFormVersions.id),
+    assessmentTypeId: text('assessment_type_id')
+      .notNull()
+      .references(() => assessmentTypes.id),
+    name: text('name').notNull(),
+    selectionMode: text('selection_mode').notNull(),
+    selectionSummary: jsonb('selection_summary')
+      .notNull()
+      .default(sql`'{}'::jsonb`),
+    status: text('status').notNull().default('ACTIVE'),
+    availableFrom: timestamp('available_from', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+    dueAt: timestamp('due_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+    createdBy: text('created_by')
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp('created_at', {
+      withTimezone: true,
+      mode: 'string',
+    })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', {
+      withTimezone: true,
+      mode: 'string',
+    })
+      .notNull()
+      .default(now),
+  },
+  (t) => ({
+    ixProgram: index('ix_assignment_groups_program').on(t.programId),
+    ixFormVersion: index('ix_assignment_groups_form_version').on(t.publicFormVersionId),
+    ixAssessmentType: index('ix_assignment_groups_assessment_type').on(t.assessmentTypeId),
+    ixStatus: index('ix_assignment_groups_status').on(t.status),
+    ckSchedule: check(
+      'ck_assignment_groups_schedule',
+      sql`${t.dueAt} IS NULL OR ${t.availableFrom} IS NULL OR ${t.dueAt} > ${t.availableFrom}`,
+    ),
+  }),
+);
+
 export const questionnaires = pgTable(
   'questionnaires',
   {
@@ -345,8 +545,12 @@ export const questionnaires = pgTable(
     code: text('code').notNull(),
     title: text('title').notNull(),
     status: text('status').notNull().default('DRAFT'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     uxCode: uniqueIndex('ux_questionnaires_code').on(t.code),
@@ -363,7 +567,9 @@ export const questionnaireVersions = pgTable(
     versionNumber: integer('version_number').notNull(),
     status: text('status').notNull().default('DRAFT'),
     publishedAt: timestamp('published_at', { withTimezone: true, mode: 'string' }),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     uxVersion: uniqueIndex('ux_questionnaire_versions').on(t.questionnaireId, t.versionNumber),
@@ -383,7 +589,9 @@ export const questions = pgTable(
     weight: integer('weight').notNull().default(1),
     category: text('category'),
     orderIndex: integer('order_index').notNull().default(0),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     ixVersion: index('ix_questions_version').on(t.questionnaireVersionId),
@@ -411,26 +619,57 @@ export const assessmentAssignments = pgTable(
   'assessment_assignments',
   {
     id: text('id').primaryKey(),
-    evaluatorRelationId: text('evaluator_relation_id')
-      .notNull()
-      .references(() => evaluatorRelations.id),
-    questionnaireVersionId: text('questionnaire_version_id')
-      .notNull()
-      .references(() => questionnaireVersions.id),
+    assignmentGroupId: text('assignment_group_id').references(() => assessmentAssignmentGroups.id),
+    programParticipantId: text('program_participant_id').references(() => programParticipants.id),
+    evaluatorUserId: text('evaluator_user_id').references(() => users.id),
+    assessmentTypeId: text('assessment_type_id').references(() => assessmentTypes.id),
+    publicFormVersionId: text('public_form_version_id').references(() => publicFormVersions.id),
+    evaluatorRelationId: text('evaluator_relation_id').references(() => evaluatorRelations.id),
+    questionnaireVersionId: text('questionnaire_version_id').references(
+      () => questionnaireVersions.id,
+    ),
     status: text('status').notNull().default('ASSIGNED'),
-    assignedAt: timestamp('assigned_at', { withTimezone: true, mode: 'string' }),
-    availableFrom: timestamp('available_from', { withTimezone: true, mode: 'string' }),
-    dueAt: timestamp('due_at', { withTimezone: true, mode: 'string' }),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    assignedAt: timestamp('assigned_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+    availableFrom: timestamp('available_from', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+    dueAt: timestamp('due_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+    createdBy: text('created_by').references(() => users.id),
+    createdAt: timestamp('created_at', {
+      withTimezone: true,
+      mode: 'string',
+    })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', {
+      withTimezone: true,
+      mode: 'string',
+    })
+      .notNull()
+      .default(now),
   },
   (t) => ({
+    ixGroup: index('ix_assignments_group').on(t.assignmentGroupId),
+    ixParticipant: index('ix_assignments_participant').on(t.programParticipantId),
+    ixEvaluator: index('ix_assignments_evaluator').on(t.evaluatorUserId),
+    ixAssessmentType: index('ix_assignments_assessment_type').on(t.assessmentTypeId),
+    ixFormVersion: index('ix_assignments_form_version').on(t.publicFormVersionId),
     ixRelation: index('ix_assignments_relation').on(t.evaluatorRelationId),
     ixStatus: index('ix_assignments_status').on(t.status),
     uxActiveAssignment: uniqueIndex('ux_active_assignment')
       .on(t.evaluatorRelationId, t.questionnaireVersionId)
+      .where(sql`${t.status} IN ('ASSIGNED', 'AVAILABLE', 'IN_PROGRESS')`),
+    uxActiveAssignmentV2: uniqueIndex('ux_active_assignment_v2')
+      .on(t.programParticipantId, t.evaluatorUserId, t.assessmentTypeId, t.publicFormVersionId)
       .where(
-        sql`${t.status} IN ('ASSIGNED', 'AVAILABLE', 'IN_PROGRESS')`,
+        sql`${t.status} IN ('ASSIGNED', 'AVAILABLE', 'IN_PROGRESS') AND ${t.programParticipantId} IS NOT NULL AND ${t.evaluatorUserId} IS NOT NULL AND ${t.assessmentTypeId} IS NOT NULL AND ${t.publicFormVersionId} IS NOT NULL`,
       ),
   }),
 );
@@ -448,8 +687,12 @@ export const attempts = pgTable(
     submittedAt: timestamp('submitted_at', { withTimezone: true, mode: 'string' }),
     version: integer('version').notNull().default(0),
     score: integer('score'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     ixAssignment: index('ix_attempts_assignment').on(t.assignmentId),
@@ -468,7 +711,9 @@ export const answers = pgTable(
       .notNull()
       .references(() => questions.id),
     value: text('value'),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     uxAnswer: uniqueIndex('ux_answers_attempt_question').on(t.attemptId, t.questionId),
@@ -501,8 +746,12 @@ export const quizzes = pgTable(
     status: text('status').notNull().default('DRAFT'),
     questionsPerPage: integer('questions_per_page').notNull().default(10),
     passingScore: integer('passing_score'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     uxCode: uniqueIndex('ux_quizzes_code').on(t.code),
@@ -541,7 +790,9 @@ export const auditLogs = pgTable(
     ipAddress: text('ip_address'),
     userAgent: text('user_agent'),
     requestId: text('request_id'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     ixActor: index('ix_audit_logs_actor').on(t.actorId),
@@ -567,8 +818,12 @@ export const importJobs = pgTable(
     errorSummary: text('error_summary'),
     committedAt: timestamp('committed_at', { withTimezone: true, mode: 'string' }),
     expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     ixCreatedBy: index('ix_import_jobs_created_by').on(t.createdBy),
@@ -588,7 +843,9 @@ export const importJobRows = pgTable(
     status: text('status').notNull(),
     message: text('message'),
     normalized: text('normalized'),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(now),
   },
   (t) => ({
     ixJob: index('ix_import_job_rows_job').on(t.importJobId),
@@ -613,77 +870,35 @@ export const systemSettings = pgTable('system_settings', {
   updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull().default(now),
 });
 
-export const publicForms = pgTable(
-  'public_forms',
+export const publicFormSubmissions = pgTable(
+  'public_form_submissions',
   {
     id: text('id').primaryKey(),
-    slug: text('slug').notNull(),
-    title: text('title').notNull(),
-    description: text('description'),
-    status: text('status')
+
+    formId: text('form_id')
       .notNull()
-      .default('DRAFT'),
+      .references(() => publicForms.id),
 
-    draftDefinition:
-      jsonb('draft_definition').notNull(),
+    respondentName: text('respondent_name'),
 
-    publishedDefinition:
-      jsonb('published_definition'),
+    respondentEmail: text('respondent_email'),
 
-    opensAt: timestamp('opens_at', {
+    answers: jsonb('answers').notNull(),
+
+    status: text('status').notNull().default('SUBMITTED'),
+
+    sheetSyncStatus: text('sheet_sync_status').notNull().default('NOT_CONFIGURED'),
+
+    sheetSyncAttempts: integer('sheet_sync_attempts').notNull().default(0),
+
+    sheetSyncedAt: timestamp('sheet_synced_at', {
       withTimezone: true,
       mode: 'string',
     }),
 
-    closesAt: timestamp('closes_at', {
-      withTimezone: true,
-      mode: 'string',
-    }),
+    sheetSyncError: text('sheet_sync_error'),
 
-    publishedAt: timestamp('published_at', {
-      withTimezone: true,
-      mode: 'string',
-    }),
-
-    googleSheetsEnabled:
-      boolean('google_sheets_enabled')
-        .notNull()
-        .default(false),
-
-    googleSheetsWebhookUrl:
-      text('google_sheets_webhook_url'),
-
-    googleSheetId:
-      text('google_sheet_id'),
-
-    googleSheetUrl:
-      text('google_sheet_url'),
-
-    googleSheetStatus:
-      text('google_sheet_status')
-        .notNull()
-        .default('NOT_CONNECTED'),
-
-    googleSheetConnectedAt: timestamp(
-      'google_sheet_connected_at',
-      {
-        withTimezone: true,
-        mode: 'string',
-      },
-    ),
-
-    createdBy: text('created_by')
-      .notNull()
-      .references(() => users.id),
-
-    createdAt: timestamp('created_at', {
-      withTimezone: true,
-      mode: 'string',
-    })
-      .notNull()
-      .default(now),
-
-    updatedAt: timestamp('updated_at', {
+    submittedAt: timestamp('submitted_at', {
       withTimezone: true,
       mode: 'string',
     })
@@ -691,88 +906,12 @@ export const publicForms = pgTable(
       .default(now),
   },
   (table) => ({
-    uxSlug: uniqueIndex(
-      'ux_public_forms_slug',
-    ).on(table.slug),
+    ixForm: index('ix_public_form_submissions_form').on(table.formId),
 
-    ixStatus: index(
-      'ix_public_forms_status',
-    ).on(table.status),
+    ixSubmittedAt: index('ix_public_form_submissions_submitted_at').on(table.submittedAt),
 
-    ixSchedule: index(
-      'ix_public_forms_schedule',
-    ).on(
-      table.opensAt,
-      table.closesAt,
+    ixSheetSyncStatus: index('ix_public_form_submissions_sheet_sync_status').on(
+      table.sheetSyncStatus,
     ),
   }),
 );
-
-export const publicFormSubmissions =
-  pgTable(
-    'public_form_submissions',
-    {
-      id: text('id').primaryKey(),
-
-      formId: text('form_id')
-        .notNull()
-        .references(() => publicForms.id),
-
-      respondentName:
-        text('respondent_name'),
-
-      respondentEmail:
-        text('respondent_email'),
-
-      answers:
-        jsonb('answers').notNull(),
-
-      status: text('status')
-        .notNull()
-        .default('SUBMITTED'),
-
-      sheetSyncStatus:
-        text('sheet_sync_status')
-          .notNull()
-          .default('NOT_CONFIGURED'),
-
-      sheetSyncAttempts:
-        integer('sheet_sync_attempts')
-          .notNull()
-          .default(0),
-
-      sheetSyncedAt: timestamp(
-        'sheet_synced_at',
-        {
-          withTimezone: true,
-          mode: 'string',
-        },
-      ),
-
-      sheetSyncError:
-        text('sheet_sync_error'),
-
-      submittedAt: timestamp(
-        'submitted_at',
-        {
-          withTimezone: true,
-          mode: 'string',
-        },
-      )
-        .notNull()
-        .default(now),
-    },
-    (table) => ({
-      ixForm: index(
-        'ix_public_form_submissions_form',
-      ).on(table.formId),
-
-      ixSubmittedAt: index(
-        'ix_public_form_submissions_submitted_at',
-      ).on(table.submittedAt),
-
-      ixSheetSyncStatus: index(
-        'ix_public_form_submissions_sheet_sync_status',
-      ).on(table.sheetSyncStatus),
-    }),
-  );
