@@ -4,7 +4,7 @@ import { AppError, loginRequestSchema, type MeResponse } from '@sarel/shared';
 import { getClientIp, getUserAgent } from '../lib/http';
 import { parseOrThrow } from '../lib/validate';
 import { requireAuthenticated } from '../middleware/auth';
-import type { ApiDeps, ApiEnv } from '../middleware/types';
+import type { AuthApiDeps, ApiEnv } from '../middleware/types';
 import type { AuthPrincipal } from '@sarel/core';
 
 function toMeResponse(principal: AuthPrincipal): MeResponse {
@@ -16,7 +16,7 @@ function toMeResponse(principal: AuthPrincipal): MeResponse {
   };
 }
 
-export function authRoutes(deps: ApiDeps): Hono<ApiEnv> {
+export function authRoutes(deps: AuthApiDeps): Hono<ApiEnv> {
   const router = new Hono<ApiEnv>();
 
   router.post('/auth/login', async (c) => {

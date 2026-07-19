@@ -62,6 +62,14 @@ describe('UserAdminService', () => {
     ).rejects.toMatchObject({ httpStatus: 409 });
   });
 
+  it('create user: User ID tidak membedakan huruf besar dan kecil', async () => {
+    const { svc } = setup();
+    await svc.create({ userId: 'Marcel01', fullName: 'Marcel', password: 'Rahasia123' }, SUPER);
+    await expect(
+      svc.create({ userId: 'marcel01', fullName: 'Marcel Lain', password: 'Rahasia123' }, SUPER),
+    ).rejects.toMatchObject({ httpStatus: 409 });
+  });
+
   it('create user: password lemah ditolak 400', async () => {
     const { svc } = setup();
     await expect(

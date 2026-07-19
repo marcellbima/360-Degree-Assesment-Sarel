@@ -1,0 +1,24 @@
+{
+  "name": "@sarel/server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.0.8",
+    "@sarel/api": "workspace:^",
+    "@sarel/core": "workspace:^",
+    "@sarel/db": "workspace:^",
+    "@sarel/shared": "workspace:^",
+    "hono": "^4.6.14"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241218.0",
+    "@types/node": "^20",
+    "tsx": "^4"
+  }
+}

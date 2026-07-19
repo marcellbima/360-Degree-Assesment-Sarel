@@ -5,7 +5,9 @@ import { adminContext } from '../../lib/admin-context';
 import { requireAuthenticated, requirePermission } from '../../middleware/auth';
 import type { ApiDeps, ApiEnv } from '../../middleware/types';
 
-export function batchRoutes(deps: ApiDeps): Hono<ApiEnv> {
+export function batchRoutes(
+  deps: Pick<ApiDeps, 'batchService'>,
+): Hono<ApiEnv> {
   const router = new Hono<ApiEnv>();
   const svc = deps.batchService;
 

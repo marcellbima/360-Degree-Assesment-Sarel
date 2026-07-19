@@ -13,6 +13,13 @@ import type {
   ProgramDto,
 } from '@sarel/shared';
 
+export interface DemoWorkspaceStatus {
+  loaded: boolean;
+  organizationCount: number;
+  programCount: number;
+  batchCount: number;
+}
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -45,7 +52,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-function qs(params: Record<string, string | number | undefined>): string {
+function qs(params: Record<string, string | number | boolean | undefined>): string {
   const sp = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
     if (v !== undefined && v !== '') sp.set(k, String(v));
@@ -54,7 +61,7 @@ function qs(params: Record<string, string | number | undefined>): string {
   return s ? `?${s}` : '';
 }
 
-type ListParams = Record<string, string | number | undefined>;
+type ListParams = Record<string, string | number | boolean | undefined>;
 
 export const authApi = {
   login: (userId: string, password: string): Promise<MeResponse> =>
@@ -71,6 +78,29 @@ const post = (path: string, body?: unknown): Promise<unknown> =>
   request(path, { method: 'POST', body: body === undefined ? undefined : JSON.stringify(body) });
 
 export const adminApi = {
+  demoWorkspace: {
+    status: () =>
+      request<DemoWorkspaceStatus>(
+        '/api/admin/demo-workspace/status',
+      ),
+
+    load: () =>
+      request<DemoWorkspaceStatus>(
+        '/api/admin/demo-workspace/load',
+        {
+          method: 'POST',
+        },
+      ),
+
+    clear: () =>
+      request<DemoWorkspaceStatus>(
+        '/api/admin/demo-workspace',
+        {
+          method: 'DELETE',
+        },
+      ),
+  },
+
   users: {
     list: (p: ListParams) => request<Paginated<AdminUserDto>>(`/api/admin/users${qs(p)}`),
     create: (body: unknown) =>
@@ -114,6 +144,10 @@ export const adminApi = {
   },
   programs: {
     list: (p: ListParams) => request<Paginated<ProgramDto>>(`/api/admin/programs${qs(p)}`),
+    get: (id: string) =>
+      request<ProgramDto>(
+        `/api/admin/programs/${id}`,
+      ),
     create: (body: unknown) =>
       request<ProgramDto>('/api/admin/programs', { method: 'POST', body: JSON.stringify(body) }),
     update: (id: string, body: unknown) =>
@@ -179,4 +213,9 @@ export const adminApi = {
     getJob: (id: string) => request<ImportPreviewResultDto>(`/api/admin/import-jobs/${id}`),
     commit: (id: string) => post(`/api/admin/import-jobs/${id}/commit`) as Promise<ImportJobDto>,
   },
+};
+
+export {
+  request as apiRequest,
+  qs as apiQueryString,
 };

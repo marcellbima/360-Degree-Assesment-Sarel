@@ -10,10 +10,30 @@
   },
   "dependencies": {
     "@sarel/core": "workspace:*",
-    "drizzle-orm": "^0.36.4"
+    "drizzle-orm": "^0.36.4",
+    "pg": "^8"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241218.0",
-    "drizzle-kit": "^0.28.1"
+    "@types/node": "^20",
+    "@types/pg": "^8",
+    "drizzle-kit": "^0.28.1",
+    "tsx": "^4.23.0"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate --config=drizzle.postgres.config.ts",
+    "db:migrate": "drizzle-kit migrate --config=drizzle.postgres.config.ts",
+    "db:check": "drizzle-kit check --config=drizzle.postgres.config.ts",
+    "db:smoke": "tsx scripts/postgres-smoke.ts",
+    "db:smoke:read-repositories": "tsx scripts/postgres-read-repositories-smoke.ts",
+    "db:smoke:user-repository": "tsx scripts/postgres-user-repository-smoke.ts",
+    "db:smoke:import-lookup-repository": "tsx scripts/postgres-import-lookup-repository-smoke.ts",
+    "db:smoke:audit-log-repository": "tsx scripts/postgres-audit-log-repository-smoke.ts",
+    "db:smoke:login-attempt-repository": "tsx scripts/postgres-login-attempt-repository-smoke.ts",
+    "db:smoke:session-repository": "tsx scripts/postgres-session-repository-smoke.ts",
+    "db:smoke:organization-repository": "tsx scripts/postgres-organization-repository-smoke.ts",
+    "db:smoke:program-repository": "tsx scripts/postgres-program-repository-smoke.ts",
+    "bootstrap:accounts": "tsx scripts/bootstrap-initial-accounts.ts",
+    "bootstrap:master-data": "tsx scripts/bootstrap-master-data.ts"
   }
 }

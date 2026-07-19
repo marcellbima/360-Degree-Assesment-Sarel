@@ -28,6 +28,7 @@ interface ListQuery {
   pageSize: number;
   search?: string;
   batchId?: string;
+  withoutBatch?: boolean;
   status?: string;
   sortBy: 'userCode' | 'fullName' | 'createdAt' | 'status';
   sortDir: 'asc' | 'desc';
@@ -35,10 +36,10 @@ interface ListQuery {
 interface CreateInput {
   userId?: string;
   userDbId?: string;
-  batchId: string;
+  batchId?: string | null;
 }
 interface UpdateInput {
-  batchId?: string;
+  batchId?: string | null;
   position?: string;
   unit?: string;
   employeeId?: string;
@@ -96,6 +97,7 @@ export class ParticipantService {
       programId,
       search: query.search,
       batchId: query.batchId,
+      withoutBatch: query.withoutBatch,
       status: query.status,
       limit: query.pageSize,
       offset: offsetOf(query.page, query.pageSize),
@@ -166,7 +168,9 @@ export class ParticipantService {
 
   async create(programId: string, input: CreateInput, ctx: AdminContext): Promise<ParticipantDto> {
     const program = await this.requireActiveProgram(programId);
-    const batch = await this.requireActiveBatchInProgram(input.batchId, programId);
+    const batch = input.batchId
+      ? await this.requireActiveBatchInProgram(input.batchId, programId)
+      : null;
 
     const user = input.userDbId
       ? await this.deps.users.findById(input.userDbId)
@@ -182,7 +186,7 @@ export class ParticipantService {
       scope.kind === 'scoped' &&
       !isWithinScope([], scope.rows, {
         programId,
-        batchId: batch.id,
+        batchId: batch?.id ?? null,
         organizationId: program.organizationId,
       })
     ) {
@@ -199,7 +203,7 @@ export class ParticipantService {
       id,
       userId: user.id,
       programId,
-      batchId: batch.id,
+      batchId: batch?.id ?? null,
       organizationId: program.organizationId,
       employeeId: null,
       position: null,
@@ -208,7 +212,7 @@ export class ParticipantService {
       createdAt: now,
       updatedAt: now,
     });
-    await this.deps.audit.record(ADMIN_AUDIT_ACTIONS.PARTICIPANT_CREATED, ctx, 'participant', id, `Program ${programId}, batch ${batch.id}.`);
+    await this.deps.audit.record(ADMIN_AUDIT_ACTIONS.PARTICIPANT_CREATED, ctx, 'participant', id, `Program ${programId}, batch ${batch?.id ?? 'tanpa batch'}.`);
     const created = await this.deps.participants.findById(id);
     return this.toDto(created ?? (await this.loadVisible(id, ctx)));
   }
@@ -217,28 +221,71 @@ export class ParticipantService {
     const row = await this.loadVisible(id, ctx);
     const now = this.deps.clock.now().toISOString();
 
-    if (input.batchId && input.batchId !== row.batchId) {
-      const batch = await this.requireActiveBatchInProgram(input.batchId, row.programId);
-      if (await this.deps.participants.hasDependents(id)) {
+    if (
+      input.batchId !== undefined &&
+      input.batchId !== row.batchId
+    ) {
+      const batch = input.batchId
+        ? await this.requireActiveBatchInProgram(
+            input.batchId,
+            row.programId,
+          )
+        : null;
+
+      if (
+        await this.deps.participants.hasDependents(id)
+      ) {
         throw new AppError(
           'CONFLICT',
-          'Participant memiliki relation atau target sehingga batch tidak dapat dipindahkan.',
+          'Participant memiliki relation atau target sehingga Batch tidak dapat diubah.',
           409,
         );
       }
-      const scope = await loadScopeFilter(this.deps.scopes, ctx);
+
+      const scope =
+        await loadScopeFilter(
+          this.deps.scopes,
+          ctx,
+        );
+
       if (
         scope.kind === 'scoped' &&
-        !isWithinScope([], scope.rows, {
-          programId: row.programId,
-          batchId: batch.id,
-          organizationId: row.organizationId,
-        })
+        !isWithinScope(
+          [],
+          scope.rows,
+          {
+            programId:
+              row.programId,
+            batchId:
+              batch?.id ?? null,
+            organizationId:
+              row.organizationId,
+          },
+        )
       ) {
-        throw new AppError('FORBIDDEN', 'Batch tujuan di luar scope administratif Anda.', 403);
+        throw new AppError(
+          'FORBIDDEN',
+          'Batch tujuan berada di luar scope administratif Anda.',
+          403,
+        );
       }
-      await this.deps.participants.update(id, { batchId: batch.id, updatedAt: now });
-      await this.deps.audit.record(ADMIN_AUDIT_ACTIONS.PARTICIPANT_BATCH_CHANGED, ctx, 'participant', id, `Batch -> ${batch.id}.`);
+
+      await this.deps.participants.update(
+        id,
+        {
+          batchId:
+            batch?.id ?? null,
+          updatedAt: now,
+        },
+      );
+
+      await this.deps.audit.record(
+        ADMIN_AUDIT_ACTIONS.PARTICIPANT_BATCH_CHANGED,
+        ctx,
+        'participant',
+        id,
+        `Batch -> ${batch?.id ?? 'tanpa batch'}.`,
+      );
     }
 
     const patch: { position?: string; unit?: string; employeeId?: string; updatedAt: string } = { updatedAt: now };

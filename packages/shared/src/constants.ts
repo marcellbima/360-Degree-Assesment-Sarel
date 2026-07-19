@@ -40,7 +40,7 @@ export const QUIZ_COMPLETED_STATUSES = ['SUBMITTED', 'AUTO_SUBMITTED', 'GRADED']
 export const API_PREFIX = '/api';
 
 // Role bawaan untuk RBAC.
-export const ROLE_CODES = ['SUPERADMIN', 'ADMIN', 'USER'] as const;
+export const ROLE_CODES = ['SUPERADMIN', 'ADMIN', 'EVALUATOR', 'USER'] as const;
 export type RoleCode = (typeof ROLE_CODES)[number];
 
 // Permission minimum (referensi PRD bagian 11).
@@ -50,17 +50,24 @@ export const PERMISSION_CODES = [
   'user.update',
   'user.delete',
   'admin.manage',
+  'organization.read',
+  'organization.manage',
   'program.read',
   'program.manage',
   'batch.read',
   'batch.manage',
+  'participant.read',
+  'participant.manage',
+  'participant.import',
   'assessment.read',
   'assessment.manage',
   'evaluator.read',
   'evaluator.manage',
+  'evaluator.import',
   'quiz.read',
   'quiz.manage',
   'monitoring.read',
+  'dashboard.evaluator.read',
   'report.read',
   'report.export',
   'attempt.reset',

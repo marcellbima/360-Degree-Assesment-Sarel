@@ -165,7 +165,7 @@ export class FakeUserAdminRepository implements UserAdminRepositoryPort {
   }
 
   async existsByUserId(userId: string): Promise<boolean> {
-    return [...this.users.values()].some((u) => u.userId === userId);
+    return [...this.users.values()].some((u) => u.userId.toLowerCase() === userId.toLowerCase());
   }
 
   async insert(row: NewUserRow, roleIds: string[]): Promise<void> {

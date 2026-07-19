@@ -515,7 +515,7 @@ interface StoredParticipant {
   id: string;
   userId: string;
   programId: string;
-  batchId: string;
+  batchId: string | null;
   organizationId: string | null;
   employeeId: string | null;
   position: string | null;
@@ -557,7 +557,9 @@ class ParticipantRepo implements ParticipantRepositoryPort {
   toRow(p: StoredParticipant): ParticipantRow {
     const u = this.store.users.get(p.userId);
     const prog = this.programs.rows.get(p.programId);
-    const b = this.batches.rows.get(p.batchId);
+    const b = p.batchId
+      ? this.batches.rows.get(p.batchId)
+      : null;
     return {
       id: p.id,
       userId: p.userId,
@@ -568,7 +570,7 @@ class ParticipantRepo implements ParticipantRepositoryPort {
       programId: p.programId,
       programCode: prog?.code ?? '',
       batchId: p.batchId,
-      batchCode: b?.code ?? '',
+      batchCode: b?.code ?? null,
       organizationId: p.organizationId,
       status: p.status,
     };
@@ -905,7 +907,7 @@ export interface Harness {
     id: string;
     userId: string;
     programId: string;
-    batchId: string;
+    batchId: string | null;
     organizationId?: string | null;
     status?: string;
   }): void;
@@ -1114,7 +1116,7 @@ export async function buildHarness(cookieSecure = false): Promise<Harness> {
     id: string;
     userId: string;
     programId: string;
-    batchId: string;
+    batchId: string | null;
     organizationId?: string | null;
     status?: string;
   }): void {

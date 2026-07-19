@@ -16,8 +16,8 @@ export interface ParticipantDto {
   email: string | null;
   programId: string;
   programCode: string;
-  batchId: string;
-  batchCode: string;
+  batchId: string | null;
+  batchCode: string | null;
   status: string;
   targets?: ParticipantTargetSummary;
   relationCounts?: ParticipantTargetSummary;
@@ -35,7 +35,7 @@ export interface EvaluatorRelationDto {
   subjectParticipantId: string;
   subjectUserCode: string;
   subjectName: string;
-  subjectBatchId: string;
+  subjectBatchId: string | null;
   evaluatorParticipantId: string | null;
   evaluatorUserId: string;
   evaluatorUserCode: string;

@@ -206,9 +206,7 @@ export const programParticipants = sqliteTable(
     programId: text('program_id')
       .notNull()
       .references(() => programs.id),
-    batchId: text('batch_id')
-      .notNull()
-      .references(() => batches.id),
+    batchId: text('batch_id').references(() => batches.id),
     organizationId: text('organization_id').references(() => organizations.id),
     employeeId: text('employee_id'),
     position: text('position'),

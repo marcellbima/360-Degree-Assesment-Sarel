@@ -140,7 +140,10 @@ function setup(jobOverrides: Partial<ImportJobRecord> & { id: string }) {
   return { svc, importJobs, commit };
 }
 
-function validRow(id: string, normalized: Record<string, string>): ImportJobRowRecord {
+function validRow(
+  id: string,
+  normalized: Record<string, string | null>,
+): ImportJobRowRecord {
   return { id, importJobId: 'j1', rowNumber: 2, status: 'VALID', message: null, normalized: JSON.stringify(normalized) };
 }
 
@@ -183,6 +186,30 @@ describe('ImportService commit state transitions', () => {
     expect(result.status).toBe('COMMITTED');
     expect(importJobs.job?.status).toBe('COMMITTED');
     expect(commit.committedParticipants).toHaveLength(2);
+  });
+
+  it('commit participant Tanpa Batch menyimpan batchId null', async () => {
+    const { svc, importJobs, commit } = setup({
+      id: 'j1',
+      validRows: 1,
+      totalRows: 1,
+    });
+
+    importJobs.rows = [
+      validRow('r1', {
+        userDbId: 'user_1',
+        batchId: null,
+      }),
+    ];
+
+    const result = await svc.commit(
+      'j1',
+      SUPER,
+    );
+
+    expect(result.status).toBe('COMMITTED');
+    expect(commit.committedParticipants).toHaveLength(1);
+    expect(commit.committedParticipants[0].batchId).toBeNull();
   });
 
   it('atomic rollback participant: batch gagal -> tidak ada data tersimpan & job tidak COMMITTED', async () => {

@@ -24,7 +24,7 @@ export const userListQuerySchema = z.object({
 export type UserListQuery = z.infer<typeof userListQuerySchema>;
 
 export const createUserSchema = z.object({
-  userId: z.string().trim().min(3, 'User ID minimal 3 karakter.').max(120),
+  userId: z.string().trim().min(1, 'User ID wajib diisi.').max(120).regex(/^[A-Za-z0-9]+$/, 'User ID hanya boleh berisi huruf dan angka.'),
   fullName: z.string().trim().min(1, 'Nama wajib diisi.').max(200),
   password: z.string().min(1, 'Password wajib diisi.').max(200),
   npk: optionalText(60),
@@ -34,7 +34,7 @@ export const createUserSchema = z.object({
   unit: optionalText(120),
   division: optionalText(120),
   organizationId: optionalText(120),
-  roles: z.array(roleEnum).min(1).max(3).optional(),
+  roles: z.array(roleEnum).min(1).max(4).optional(),
 });
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 
@@ -53,7 +53,7 @@ export const updateUserSchema = z
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 
 export const setUserRolesSchema = z.object({
-  roles: z.array(roleEnum).min(1, 'Minimal satu role.').max(3),
+  roles: z.array(roleEnum).min(1, 'Minimal satu role.').max(4),
 });
 export type SetUserRolesInput = z.infer<typeof setUserRolesSchema>;
 

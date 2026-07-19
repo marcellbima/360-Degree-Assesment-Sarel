@@ -23,7 +23,7 @@ export function LoginPage(): JSX.Element {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
+    <main className="flex min-h-screen items-center justify-center bg-[#08223d] bg-[url('/Bg.png')] bg-cover bg-center bg-no-repeat p-4">
       <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-sm">
         <h1 className="text-xl font-semibold text-slate-800">Sarel Assessment</h1>
         <p className="mt-1 text-sm text-slate-500">Masuk dengan User ID dan kata sandi Anda.</p>

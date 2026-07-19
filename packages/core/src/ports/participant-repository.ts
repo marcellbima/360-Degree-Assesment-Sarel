@@ -9,8 +9,8 @@ export interface ParticipantRow {
   email: string | null;
   programId: string;
   programCode: string;
-  batchId: string;
-  batchCode: string;
+  batchId: string | null;
+  batchCode: string | null;
   organizationId: string | null;
   status: string;
 }
@@ -19,6 +19,7 @@ export interface ParticipantListFilter {
   programId: string;
   search?: string;
   batchId?: string;
+  withoutBatch?: boolean;
   status?: string;
   limit: number;
   offset: number;
@@ -31,7 +32,7 @@ export interface NewParticipant {
   id: string;
   userId: string;
   programId: string;
-  batchId: string;
+  batchId: string | null;
   organizationId: string | null;
   employeeId: string | null;
   position: string | null;
@@ -42,7 +43,7 @@ export interface NewParticipant {
 }
 
 export interface ParticipantPatch {
-  batchId?: string;
+  batchId?: string | null;
   position?: string;
   unit?: string;
   employeeId?: string;

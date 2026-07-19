@@ -21,3 +21,32 @@ export { D1RelationRepository } from './repositories/evaluator-relation-reposito
 export { D1ImportJobRepository } from './repositories/import-job-repository';
 export { D1ImportLookupRepository } from './repositories/import-lookup-repository';
 export { D1ImportCommitRepository } from './repositories/import-commit-repository';
+
+export * from './postgres-client';
+
+export { PostgresHealthRepository } from './repositories/postgres-health-repository';
+
+export { PostgresRoleRepository } from './repositories/postgres-role-repository';
+export { PostgresAssessmentTypeRepository } from './repositories/postgres-assessment-type-repository';
+export { PostgresEvaluatorRelationRepository } from './repositories/postgres-evaluator-relation-repository';
+export { PostgresParticipantTargetRepository } from './repositories/postgres-participant-target-repository';
+export { PostgresParticipantRepository } from './repositories/postgres-participant-repository';
+export { PostgresUserRepository } from './repositories/postgres-user-repository';
+export { PostgresImportLookupRepository } from './repositories/postgres-import-lookup-repository';
+export { PostgresImportCommitRepository } from './repositories/postgres-import-commit-repository';
+export { PostgresImportJobRepository } from './repositories/postgres-import-job-repository';
+export { PostgresAuditLogRepository } from './repositories/postgres-audit-log-repository';
+export { PostgresLoginAttemptRepository } from './repositories/postgres-login-attempt-repository';
+export { PostgresSessionRepository } from './repositories/postgres-session-repository';
+export { PostgresOrganizationRepository } from './repositories/postgres-organization-repository';
+export { PostgresProgramRepository } from './repositories/postgres-program-repository';
+export { PostgresPublicFormRepository } from './repositories/postgres-public-form-repository';
+
+export { PostgresUserAdminRepository } from './repositories/postgres-user-admin-repository';
+export { PostgresAdminScopeRepository } from './repositories/postgres-admin-scope-repository';
+export { PostgresBatchRepository } from './repositories/postgres-batch-repository';
+export {
+  DEMO_WORKSPACE_CODES,
+  DEMO_WORKSPACE_IDS,
+  PostgresDemoWorkspaceRepository,
+} from './repositories/postgres-demo-workspace-repository';

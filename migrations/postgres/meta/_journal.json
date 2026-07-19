@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1783170268859,
+      "tag": "0000_nervous_phalanx",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1783356288308,
+      "tag": "0001_eminent_fallen_one",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783397691020,
+      "tag": "0002_harsh_starbolt",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1783408328549,
+      "tag": "0003_amusing_lethal_legion",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783587351126,
+      "tag": "0004_assessment_rbac_seed",
+      "breakpoints": true
+    }
+  ]
+}

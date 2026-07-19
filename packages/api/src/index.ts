@@ -6,4 +6,13 @@ export {
   requirePermission,
   requireRole,
 } from './middleware/auth';
-export type { ApiAuthConfig, ApiDeps, ApiEnv } from './middleware/types';
+export type {
+  ApiAuthConfig,
+  ApiDeps,
+  ApiEnv,
+  AuthApiDeps,
+  HealthApiDeps,
+  PublicFormApiDeps,
+} from './middleware/types';
+export { createAuthApiApp } from './auth-app';
+export type { AuthHealthApiDeps } from './auth-app';

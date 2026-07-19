@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
-import type { ApiDeps, ApiEnv } from '../middleware/types';
+import type { ApiEnv, HealthApiDeps } from '../middleware/types';
 
 // Route group untuk health check.
-export function healthRoutes(deps: ApiDeps): Hono<ApiEnv> {
+export function healthRoutes(deps: HealthApiDeps): Hono<ApiEnv> {
   const router = new Hono<ApiEnv>();
 
   router.get('/health', async (c) => {

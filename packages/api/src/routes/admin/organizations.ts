@@ -9,7 +9,9 @@ import { adminContext } from '../../lib/admin-context';
 import { requireAuthenticated, requirePermission } from '../../middleware/auth';
 import type { ApiDeps, ApiEnv } from '../../middleware/types';
 
-export function organizationRoutes(deps: ApiDeps): Hono<ApiEnv> {
+export function organizationRoutes(
+  deps: Pick<ApiDeps, 'organizationService'>,
+): Hono<ApiEnv> {
   const router = new Hono<ApiEnv>();
   const svc = deps.organizationService;
 

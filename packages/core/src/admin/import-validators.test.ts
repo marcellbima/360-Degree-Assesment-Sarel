@@ -21,6 +21,53 @@ describe('classifyParticipantRows', () => {
     expect(r[0].normalized).toEqual({ userDbId: 'user_1', batchId: 'batch_1' });
   });
 
+  it('batchCode kosong -> VALID sebagai Tanpa Batch', () => {
+    const result = classifyParticipantRows(
+      [
+        {
+          rowNumber: 2,
+          userId: 'U1',
+          batchCode: '',
+        },
+      ],
+      lookups,
+    );
+
+    expect(result[0].status).toBe('VALID');
+    expect(result[0].normalized).toEqual({
+      userDbId: 'user_1',
+      batchId: null,
+    });
+  });
+
+  it('batch-only scope tidak mencakup peserta Tanpa Batch', () => {
+    const result = classifyParticipantRows(
+      [
+        {
+          rowNumber: 2,
+          userId: 'U1',
+          batchCode: '',
+        },
+      ],
+      {
+        ...lookups,
+        scope: {
+          kind: 'scoped',
+          rows: [
+            {
+              programId: 'prog_1',
+              batchId: 'batch_1',
+              organizationId: null,
+            },
+          ],
+        },
+      },
+    );
+
+    expect(result[0].status).toBe('ERROR');
+    expect(result[0].message).toMatch(/scope/i);
+  });
+
   it('unknown user ERROR, unknown batch ERROR', () => {
     expect(classifyParticipantRows([{ rowNumber: 2, userId: 'X', batchCode: 'B1' }], lookups)[0].status).toBe('ERROR');
     expect(classifyParticipantRows([{ rowNumber: 2, userId: 'U1', batchCode: 'X' }], lookups)[0].status).toBe('ERROR');

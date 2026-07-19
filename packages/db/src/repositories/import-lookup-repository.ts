@@ -1,4 +1,4 @@
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import type {
   ImportLookupRepositoryPort,
   ImportParticipantRef,
@@ -19,9 +19,9 @@ export class D1ImportLookupRepository implements ImportLookupRepositoryPort {
     const rows = await this.db
       .select({ id: users.id, userCode: users.userId, fullName: users.fullName })
       .from(users)
-      .where(inArray(users.userId, codes))
+      .where(inArray(sql<string>`lower(${users.userId})`, codes.map((code) => code.toLowerCase())))
       .all();
-    for (const r of rows) map.set(r.userCode, { id: r.id, userCode: r.userCode, fullName: r.fullName });
+    for (const r of rows) map.set(r.userCode.toLowerCase(), { id: r.id, userCode: r.userCode, fullName: r.fullName });
     return map;
   }
 
@@ -32,10 +32,10 @@ export class D1ImportLookupRepository implements ImportLookupRepositoryPort {
       .select({ id: batches.id, code: batches.code })
       .from(batches)
       .where(
-        and(eq(batches.programId, programId), eq(batches.status, 'ACTIVE'), inArray(batches.code, codes)),
+        and(eq(batches.programId, programId), eq(batches.status, 'ACTIVE'), inArray(sql<string>`lower(${batches.code})`, codes.map((code) => code.toLowerCase()))),
       )
       .all();
-    for (const r of rows) map.set(r.code, r.id);
+    for (const r of rows) map.set(r.code.toLowerCase(), r.id);
     return map;
   }
 
@@ -68,12 +68,12 @@ export class D1ImportLookupRepository implements ImportLookupRepositoryPort {
         and(
           eq(programParticipants.programId, programId),
           eq(programParticipants.status, 'ACTIVE'),
-          inArray(users.userId, codes),
+          inArray(sql<string>`lower(${users.userId})`, codes.map((code) => code.toLowerCase())),
         ),
       )
       .all();
     for (const r of rows) {
-      map.set(r.userCode, {
+      map.set(r.userCode.toLowerCase(), {
         participantId: r.participantId,
         userId: r.userId,
         userCode: r.userCode,
