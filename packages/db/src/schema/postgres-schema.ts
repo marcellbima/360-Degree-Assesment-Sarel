@@ -40,7 +40,7 @@ export const users = pgTable(
     createdBy: text('created_by'),
   },
   (t) => ({
-    uxUserId: uniqueIndex('ux_users_user_id').on(t.userId),
+    uxUserId: uniqueIndex('ux_users_user_id').on(sql`lower(${t.userId})`),
     ixNpk: index('ix_users_npk').on(t.npk),
     ixStatus: index('ix_users_status').on(t.status),
   }),
@@ -217,9 +217,7 @@ export const programParticipants = pgTable(
     programId: text('program_id')
       .notNull()
       .references(() => programs.id),
-    batchId: text('batch_id')
-      .notNull()
-      .references(() => batches.id),
+    batchId: text('batch_id').references(() => batches.id),
     organizationId: text('organization_id').references(() => organizations.id),
     employeeId: text('employee_id'),
     position: text('position'),

@@ -8,7 +8,7 @@ export interface RelationRow {
   subjectParticipantId: string;
   subjectUserCode: string;
   subjectName: string;
-  subjectBatchId: string;
+  subjectBatchId: string | null;
   subjectOrganizationId: string | null;
   evaluatorUserId: string;
   evaluatorUserCode: string;

@@ -1,4 +1,5 @@
 import {
+  isNull,
   and,
   asc,
   count,
@@ -41,7 +42,7 @@ const participantSelect = {
   email: users.email,
   programId: programs.id,
   programCode: programs.code,
-  batchId: batches.id,
+  batchId: programParticipants.batchId,
   batchCode: batches.code,
   organizationId:
     programParticipants.organizationId,
@@ -73,7 +74,7 @@ export class PostgresParticipantRepository
           programParticipants.programId,
         ),
       )
-      .innerJoin(
+      .leftJoin(
         batches,
         eq(
           batches.id,
@@ -106,7 +107,13 @@ export class PostgresParticipantRepository
       );
     }
 
-    if (filter.batchId) {
+    if (filter.withoutBatch) {
+      conditions.push(
+        isNull(
+          programParticipants.batchId,
+        ),
+      );
+    } else if (filter.batchId) {
       conditions.push(
         eq(
           programParticipants.batchId,
@@ -278,7 +285,7 @@ export class PostgresParticipantRepository
   ): Promise<void> {
     const values: {
       updatedAt: string;
-      batchId?: string;
+      batchId?: string | null;
       position?: string;
       unit?: string;
       employeeId?: string;

@@ -8,7 +8,7 @@ export interface ImportParticipantRef {
   participantId: string;
   userId: string;
   userCode: string;
-  batchId: string;
+  batchId: string | null;
   organizationId: string | null;
 }
 

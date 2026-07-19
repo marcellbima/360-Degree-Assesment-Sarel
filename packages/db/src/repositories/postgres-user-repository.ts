@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type {
   UserRecord,
   UserRepositoryPort,
@@ -38,7 +38,7 @@ export class PostgresUserRepository
     const [row] = await this.db
       .select()
       .from(users)
-      .where(eq(users.userId, userId))
+      .where(sql`lower(${users.userId}) = lower(${userId})`)
       .limit(1);
 
     return row ? this.toRecord(row) : null;

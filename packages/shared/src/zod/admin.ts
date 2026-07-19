@@ -24,7 +24,7 @@ export const userListQuerySchema = z.object({
 export type UserListQuery = z.infer<typeof userListQuerySchema>;
 
 export const createUserSchema = z.object({
-  userId: z.string().trim().min(3, 'User ID minimal 3 karakter.').max(120),
+  userId: z.string().trim().min(1, 'User ID wajib diisi.').max(120).regex(/^[A-Za-z0-9]+$/, 'User ID hanya boleh berisi huruf dan angka.'),
   fullName: z.string().trim().min(1, 'Nama wajib diisi.').max(200),
   password: z.string().min(1, 'Password wajib diisi.').max(200),
   npk: optionalText(60),

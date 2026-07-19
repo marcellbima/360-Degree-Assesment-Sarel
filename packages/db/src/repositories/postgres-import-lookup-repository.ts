@@ -2,6 +2,7 @@ import {
   and,
   eq,
   inArray,
+  sql,
 } from 'drizzle-orm';
 import type {
   ImportLookupRepositoryPort,
@@ -40,10 +41,10 @@ export class PostgresImportLookupRepository
         fullName: users.fullName,
       })
       .from(users)
-      .where(inArray(users.userId, codes));
+      .where(inArray(sql<string>`lower(${users.userId})`, codes.map((code) => code.toLowerCase())));
 
     for (const row of rows) {
-      result.set(row.userCode, {
+      result.set(row.userCode.toLowerCase(), {
         id: row.id,
         userCode: row.userCode,
         fullName: row.fullName,
@@ -73,12 +74,12 @@ export class PostgresImportLookupRepository
         and(
           eq(batches.programId, programId),
           eq(batches.status, 'ACTIVE'),
-          inArray(batches.code, codes),
+          inArray(sql<string>`lower(${batches.code})`, codes.map((code) => code.toLowerCase())),
         ),
       );
 
     for (const row of rows) {
-      result.set(row.code, row.id);
+      result.set(row.code.toLowerCase(), row.id);
     }
 
     return result;
@@ -145,12 +146,12 @@ export class PostgresImportLookupRepository
             programParticipants.status,
             'ACTIVE',
           ),
-          inArray(users.userId, codes),
+          inArray(sql<string>`lower(${users.userId})`, codes.map((code) => code.toLowerCase())),
         ),
       );
 
     for (const row of rows) {
-      result.set(row.userCode, {
+      result.set(row.userCode.toLowerCase(), {
         participantId: row.participantId,
         userId: row.userId,
         userCode: row.userCode,

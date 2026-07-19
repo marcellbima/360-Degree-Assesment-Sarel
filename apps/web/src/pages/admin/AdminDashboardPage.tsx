@@ -1,336 +1,135 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import type { ProgramDto } from '@sarel/shared';
+import { useAuth } from '../../auth/AuthContext';
+import { ApiError, adminApi } from '../../lib/api';
 
-import {
-  useAuth,
-} from '../../auth/AuthContext';
-import {
-  ConfirmDialog,
-} from '../../components/Modal';
-import {
-  ApiError,
-  adminApi,
-  type DemoWorkspaceStatus,
-} from '../../lib/api';
+interface ProgramSummary {
+  program: ProgramDto;
+  participants: number;
+  relations: number;
+}
+
+function errorMessage(error: unknown, fallback: string): string {
+  return error instanceof ApiError ? error.message : fallback;
+}
 
 export function AdminDashboardPage(): JSX.Element {
   const { user } = useAuth();
-
-  const isSuperadmin =
-    user?.roles.includes(
-      'SUPERADMIN',
-    ) ?? false;
-
-  const [
-    demoStatus,
-    setDemoStatus,
-  ] =
-    useState<DemoWorkspaceStatus | null>(
-      null,
-    );
-
-  const [
-    demoLoading,
-    setDemoLoading,
-  ] =
-    useState(false);
-
-  const [
-    demoError,
-    setDemoError,
-  ] =
-    useState<string | null>(
-      null,
-    );
-
-  const [
-    demoMessage,
-    setDemoMessage,
-  ] =
-    useState<string | null>(
-      null,
-    );
-
-  const [
-    confirmClear,
-    setConfirmClear,
-  ] =
-    useState(false);
+  const [summaries, setSummaries] = useState<ProgramSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isSuperadmin) {
-      return;
-    }
-
     let active = true;
+    setLoading(true);
+    setError(null);
 
-    setDemoLoading(true);
-    setDemoError(null);
-
-    adminApi.demoWorkspace
-      .status()
-      .then((result) => {
-        if (active) {
-          setDemoStatus(result);
-        }
+    adminApi.programs
+      .list({ page: 1, pageSize: 100, status: 'ACTIVE' })
+      .then(async (programResult) => {
+        const result = await Promise.all(
+          programResult.items.map(async (program) => {
+            const [participantResult, relationResult] = await Promise.all([
+              adminApi.participants.list(program.id, { page: 1, pageSize: 1, status: 'ACTIVE' }),
+              adminApi.relations.list(program.id, { page: 1, pageSize: 1, status: 'ACTIVE' }),
+            ]);
+            return {
+              program,
+              participants: participantResult.total,
+              relations: relationResult.total,
+            };
+          }),
+        );
+        if (active) setSummaries(result);
       })
-      .catch((error: unknown) => {
-        if (active) {
-          setDemoError(
-            error instanceof ApiError
-              ? error.message
-              : 'Gagal memuat status data contoh.',
-          );
-        }
+      .catch((caught: unknown) => {
+        if (active) setError(errorMessage(caught, 'Ringkasan dashboard gagal dimuat.'));
       })
       .finally(() => {
-        if (active) {
-          setDemoLoading(false);
-        }
+        if (active) setLoading(false);
       });
 
     return () => {
       active = false;
     };
-  }, [isSuperadmin]);
+  }, []);
 
-  async function loadDemoWorkspace():
-    Promise<void> {
-    setDemoLoading(true);
-    setDemoError(null);
-    setDemoMessage(null);
-
-    try {
-      const result =
-        await adminApi
-          .demoWorkspace
-          .load();
-
-      setDemoStatus(result);
-      setDemoMessage(
-        'Data contoh berhasil dimuat.',
-      );
-    } catch (error) {
-      setDemoError(
-        error instanceof ApiError
-          ? error.message
-          : 'Gagal memuat data contoh.',
-      );
-    } finally {
-      setDemoLoading(false);
-    }
-  }
-
-  async function clearDemoWorkspace():
-    Promise<void> {
-    setDemoLoading(true);
-    setDemoError(null);
-    setDemoMessage(null);
-
-    try {
-      const result =
-        await adminApi
-          .demoWorkspace
-          .clear();
-
-      setDemoStatus(result);
-      setDemoMessage(
-        'Semua data contoh berhasil dihapus.',
-      );
-      setConfirmClear(false);
-    } catch (error) {
-      setDemoError(
-        error instanceof ApiError
-          ? error.message
-          : 'Gagal menghapus data contoh.',
-      );
-    } finally {
-      setDemoLoading(false);
-    }
-  }
+  const totals = useMemo(
+    () => summaries.reduce(
+      (current, item) => ({
+        participants: current.participants + item.participants,
+        relations: current.relations + item.relations,
+      }),
+      { participants: 0, relations: 0 },
+    ),
+    [summaries],
+  );
 
   return (
     <section className="space-y-5">
       <div>
-        <p className="text-sm font-medium text-blue-600">
-          Dashboard Administrasi
-        </p>
-
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">
-          Selamat datang, {user?.fullName}
-        </h1>
-
-        <p className="mt-2 text-sm text-slate-500">
-          Kelola program assessment, peserta, penilai, form, dan proses
-          pengerjaan dari workspace ini.
-        </p>
+        <p className="text-sm font-medium text-blue-600">Dashboard Administrasi</p>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900">Selamat datang, {user?.fullName}</h1>
+        <p className="mt-2 text-sm text-slate-500">Ringkasan program, peserta, dan relasi penilai aktif.</p>
       </div>
 
-      {isSuperadmin ? (
-        <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="font-semibold text-slate-900">
-                  Data Contoh Super Admin
-                </h2>
-
-                <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                    demoStatus?.loaded
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-slate-200 text-slate-600'
-                  }`}
-                >
-                  {demoLoading
-                    ? 'Memuat...'
-                    : demoStatus?.loaded
-                      ? 'AKTIF'
-                      : 'BELUM DIMUAT'}
-                </span>
-              </div>
-
-              <p className="mt-2 max-w-2xl text-sm text-slate-600">
-                Paket contoh digunakan untuk melihat alur aplikasi tanpa
-                mengganggu data asli. Seluruh data contoh diberi tanda
-                [CONTOH] dan dapat dihapus kembali.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                disabled={demoLoading}
-                onClick={() =>
-                  void loadDemoWorkspace()
-                }
-                className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {demoStatus?.loaded
-                  ? 'Muat Ulang Data Contoh'
-                  : 'Muat Data Contoh'}
-              </button>
-
-              <button
-                type="button"
-                disabled={
-                  demoLoading ||
-                  !demoStatus?.loaded
-                }
-                onClick={() =>
-                  setConfirmClear(true)
-                }
-                className="rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Hapus Semua Data Contoh
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-lg border border-blue-100 bg-white p-3">
-              <p className="text-xs text-slate-500">
-                Organisasi Contoh
-              </p>
-              <p className="mt-1 text-xl font-semibold text-slate-900">
-                {demoStatus?.organizationCount ?? 0}
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-blue-100 bg-white p-3">
-              <p className="text-xs text-slate-500">
-                Program Contoh
-              </p>
-              <p className="mt-1 text-xl font-semibold text-slate-900">
-                {demoStatus?.programCount ?? 0}
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-blue-100 bg-white p-3">
-              <p className="text-xs text-slate-500">
-                Batch Contoh
-              </p>
-              <p className="mt-1 text-xl font-semibold text-slate-900">
-                {demoStatus?.batchCount ?? 0}
-              </p>
-            </div>
-          </div>
-
-          {demoMessage ? (
-            <p className="mt-3 text-sm font-medium text-emerald-700">
-              {demoMessage}
-            </p>
-          ) : null}
-
-          {demoError ? (
-            <p className="mt-3 text-sm font-medium text-red-600">
-              {demoError}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
+      {error ? <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <p className="text-sm text-slate-500">
-            Program Aktif
-          </p>
-          <p className="mt-2 text-2xl font-semibold text-slate-900">
-            —
-          </p>
+          <p className="text-sm text-slate-500">Program Aktif</p>
+          <p className="mt-2 text-3xl font-semibold text-slate-900">{loading ? '—' : summaries.length}</p>
         </div>
-
         <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <p className="text-sm text-slate-500">
-            Total Peserta
-          </p>
-          <p className="mt-2 text-2xl font-semibold text-slate-900">
-            —
-          </p>
+          <p className="text-sm text-slate-500">Peserta Aktif</p>
+          <p className="mt-2 text-3xl font-semibold text-slate-900">{loading ? '—' : totals.participants}</p>
         </div>
-
         <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <p className="text-sm text-slate-500">
-            Assessment Selesai
-          </p>
-          <p className="mt-2 text-2xl font-semibold text-slate-900">
-            —
-          </p>
+          <p className="text-sm text-slate-500">Relasi Penilai</p>
+          <p className="mt-2 text-3xl font-semibold text-slate-900">{loading ? '—' : totals.relations}</p>
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
-        <h2 className="font-semibold text-slate-800">
-          Ringkasan Operasional
-        </h2>
-
-        <p className="mt-2 text-sm text-slate-500">
-          Data monitoring program, status SELF dan OTHER, tenggat waktu,
-          serta kegagalan sinkronisasi akan ditampilkan pada tahap
-          pengembangan Dashboard Admin.
-        </p>
+      <div>
+        <h2 className="font-semibold text-slate-800">Program Berjalan</h2>
+        <p className="mt-1 text-sm text-slate-500">Pemeriksaan cepat kesiapan data sebelum penugasan assessment.</p>
       </div>
 
-      {confirmClear ? (
-        <ConfirmDialog
-          title="Hapus Semua Data Contoh"
-          message="Seluruh organisasi, program, batch, dan data turunan contoh akan dihapus permanen. Data asli tidak akan terpengaruh."
-          confirmLabel="Hapus Data Contoh"
-          danger
-          busy={demoLoading}
-          error={demoError}
-          onConfirm={() =>
-            void clearDemoWorkspace()
-          }
-          onCancel={() => {
-            if (!demoLoading) {
-              setConfirmClear(false);
-            }
-          }}
-        />
-      ) : null}
+      {loading ? (
+        <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">Memuat ringkasan...</div>
+      ) : summaries.length === 0 ? (
+        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
+          <p className="font-medium text-slate-700">Belum ada program aktif.</p>
+          <p className="mt-1 text-sm text-slate-500">Buat Program Assessment untuk memulai.</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {summaries.map(({ program, participants, relations }) => (
+            <article key={program.id} className="rounded-xl border border-slate-200 bg-white p-5">
+              <p className="text-xs font-medium uppercase tracking-wide text-blue-600">{program.code}</p>
+              <h3 className="mt-1 text-lg font-semibold text-slate-900">{program.name}</h3>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="rounded-lg bg-slate-50 p-3">
+                  <p className="text-xs text-slate-500">Peserta</p>
+                  <p className="mt-1 text-xl font-semibold text-slate-900">{participants}</p>
+                </div>
+                <div className="rounded-lg bg-slate-50 p-3">
+                  <p className="text-xs text-slate-500">Relasi penilai</p>
+                  <p className="mt-1 text-xl font-semibold text-slate-900">{relations}</p>
+                </div>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                <span className={`rounded-full px-2.5 py-1 font-medium ${participants > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                  {participants > 0 ? 'Peserta siap' : 'Peserta belum ada'}
+                </span>
+                <span className={`rounded-full px-2.5 py-1 font-medium ${relations > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                  {relations > 0 ? 'Relasi tersedia' : 'Relasi belum diatur'}
+                </span>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

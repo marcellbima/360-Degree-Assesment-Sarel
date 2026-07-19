@@ -5,6 +5,16 @@ const pageField = z.coerce.number().int().min(1).default(1);
 const pageSizeField = z.coerce.number().int().min(1).max(MAX_PAGE_SIZE).default(20);
 const searchField = z.string().trim().max(120).optional();
 const optionalId = z.string().trim().min(1).max(120).optional();
+
+const optionalBooleanQuery = z.preprocess(
+  (value) => {
+    if (value === true || value === 'true') return true;
+    if (value === false || value === 'false') return false;
+    return value;
+  },
+  z.boolean().optional(),
+);
+
 const evaluatorType = z.enum(['SUPERIOR', 'PEER', 'SUBORDINATE']);
 
 // ---- Participants ----
@@ -13,6 +23,7 @@ export const participantListQuerySchema = z.object({
   pageSize: pageSizeField,
   search: searchField,
   batchId: optionalId,
+  withoutBatch: optionalBooleanQuery,
   status: z.string().trim().max(40).optional(),
   sortBy: z.enum(['userCode', 'fullName', 'createdAt', 'status']).default('createdAt'),
   sortDir: z.enum(['asc', 'desc']).default('desc'),
@@ -22,13 +33,13 @@ export const createParticipantSchema = z
   .object({
     userId: optionalId, // users.user_id (User ID) ATAU users.id
     userDbId: optionalId,
-    batchId: z.string().trim().min(1, 'Batch wajib diisi.').max(120),
+    batchId: z.string().trim().min(1).max(120).nullable().optional(),
   })
   .refine((v) => v.userId || v.userDbId, { message: 'userId atau userDbId wajib diisi.' });
 
 export const updateParticipantSchema = z
   .object({
-    batchId: optionalId,
+    batchId: z.string().trim().min(1).max(120).nullable().optional(),
     position: z.string().trim().max(120).optional(),
     unit: z.string().trim().max(120).optional(),
     employeeId: z.string().trim().max(60).optional(),

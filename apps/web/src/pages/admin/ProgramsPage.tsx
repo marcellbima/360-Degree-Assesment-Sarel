@@ -88,7 +88,21 @@ function errorMessage(
     : fallback;
 }
 
-export function ProgramsPage(): JSX.Element {
+function programCode(name: string, year: string): string {
+  const base = name
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 48);
+  return [base || 'PROGRAM', year.trim()].filter(Boolean).join('_').slice(0, 60);
+}
+
+export function ProgramsPage({
+  onOpenParticipants,
+}: {
+  onOpenParticipants?: (programId: string) => void;
+}): JSX.Element {
   const { user } = useAuth();
 
   const canManage =
@@ -343,9 +357,8 @@ export function ProgramsPage(): JSX.Element {
     void {
     setForm({
       ...EMPTY_FORM,
-      organizationId:
-        organizations[0]?.id ??
-        '',
+      organizationId: organizations[0]?.id ?? '',
+      year: String(new Date().getFullYear()),
     });
     setFormError(null);
     setFormMode('create');
@@ -398,7 +411,7 @@ export function ProgramsPage(): JSX.Element {
       string,
       unknown
     > = {
-      code: form.code.trim(),
+      code: form.code.trim() || programCode(form.name, form.year),
       name: form.name.trim(),
       description:
         form.description.trim(),
@@ -438,9 +451,15 @@ export function ProgramsPage(): JSX.Element {
           updated,
         );
       } else {
-        await adminApi
+        const created = await adminApi
           .programs
           .create(body);
+
+        if (onOpenParticipants) {
+          setFormMode(null);
+          onOpenParticipants(created.id);
+          return;
+        }
       }
 
       setFormMode(null);
@@ -552,7 +571,7 @@ export function ProgramsPage(): JSX.Element {
       },
       {
         key: 'assignments',
-        label: 'Assignment',
+        label: 'Penugasan',
       },
       {
         key: 'monitoring',
@@ -595,7 +614,7 @@ export function ProgramsPage(): JSX.Element {
               <p className="mt-2 text-sm text-slate-500">
                 {organization
                   ? `${organization.code} — ${organization.name}`
-                  : 'Client/organisasi belum ditentukan'}
+                  : 'Organisasi belum ditentukan'}
               </p>
             </div>
 
@@ -666,31 +685,31 @@ export function ProgramsPage(): JSX.Element {
                   —
                 </p>
                 <p className="mt-1 text-xs text-slate-400">
-                  Akan terhubung pada Fase Kelola Peserta.
+                  Kelola seluruh peserta melalui workspace program.
                 </p>
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-white p-5">
                 <p className="text-sm text-slate-500">
-                  Assignment
+                  Penugasan
                 </p>
                 <p className="mt-2 text-2xl font-semibold text-slate-900">
                   —
                 </p>
                 <p className="mt-1 text-xs text-slate-400">
-                  Akan terhubung pada Fase Penugasan.
+                  Penugasan akan tampil setelah layanannya tersedia.
                 </p>
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-white p-5">
                 <p className="text-sm text-slate-500">
-                  Progress
+                  Progres
                 </p>
                 <p className="mt-2 text-2xl font-semibold text-slate-900">
                   —
                 </p>
                 <p className="mt-1 text-xs text-slate-400">
-                  Akan terhubung pada Fase Monitoring.
+                  Progres akan tampil setelah layanan monitoring tersedia.
                 </p>
               </div>
             </div>
@@ -773,7 +792,7 @@ export function ProgramsPage(): JSX.Element {
 
               <div>
                 <dt className="text-slate-500">
-                  Client/Organisasi
+                  Organisasi
                 </dt>
                 <dd className="mt-1 font-medium text-slate-900">
                   {organization?.name ??
@@ -808,17 +827,26 @@ export function ProgramsPage(): JSX.Element {
 
         {activeTab ===
         'participants' ? (
-          <ProgramWorkspacePlaceholder
-            title="Peserta & Batch"
-            description="Data peserta, batch, struktur organisasi, relasi penilai, serta import akan dikelola dalam konteks Program Assessment ini."
-          />
+          <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <h2 className="font-semibold text-slate-800">Peserta & Batch</h2>
+            <p className="mt-2 text-sm text-slate-500">Kelola peserta, Batch, struktur organisasi, relasi penilai, dan import dalam satu workspace.</p>
+            {onOpenParticipants ? (
+              <button
+                type="button"
+                onClick={() => onOpenParticipants(selectedProgram.id)}
+                className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              >
+                Buka Kelola Peserta
+              </button>
+            ) : null}
+          </div>
         ) : null}
 
         {activeTab ===
         'assignments' ? (
           <ProgramWorkspacePlaceholder
-            title="Assignment"
-            description="Assignment SELF dan OTHER akan dipisahkan, memilih form dan versinya, periode pengerjaan, batch, serta peserta program."
+            title="Penugasan"
+            description="Pilih form, peserta atau Batch, jenis penilaian, dan periode dalam satu alur."
           />
         ) : null}
 
@@ -826,7 +854,7 @@ export function ProgramsPage(): JSX.Element {
         'monitoring' ? (
           <ProgramWorkspacePlaceholder
             title="Monitoring"
-            description="Progress SELF dan OTHER, peserta belum mulai, sedang mengerjakan, selesai, serta terlambat akan ditampilkan untuk program ini."
+            description="Lihat peserta yang belum mulai, sedang mengisi, sudah selesai, dan terlambat."
           />
         ) : null}
 
@@ -834,7 +862,7 @@ export function ProgramsPage(): JSX.Element {
         'results' ? (
           <ProgramWorkspacePlaceholder
             title="Hasil & Laporan"
-            description="Jawaban, hasil SELF, hasil OTHER, perbandingan per level penilai, dan export laporan akan dibatasi pada program ini."
+            description="Lihat ringkasan hasil terlebih dahulu, lalu buka detail dan unduh laporan saat diperlukan."
           />
         ) : null}
 
@@ -884,7 +912,7 @@ export function ProgramsPage(): JSX.Element {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-blue-600">
-            Project Assessment
+            Program Assessment
           </p>
 
           <h1 className="mt-1 text-2xl font-semibold text-slate-900">
@@ -892,7 +920,7 @@ export function ProgramsPage(): JSX.Element {
           </h1>
 
           <p className="mt-2 max-w-2xl text-sm text-slate-500">
-            Setiap program mewakili satu project assessment untuk satu client, periode, peserta, assignment, monitoring, dan laporan.
+            Satu program menyatukan peserta, Batch, penugasan, monitoring, dan laporan dalam satu periode.
           </p>
         </div>
 
@@ -967,7 +995,7 @@ export function ProgramsPage(): JSX.Element {
           </p>
 
           <p className="mt-1 text-sm text-slate-500">
-            Buat program untuk mulai mengatur project assessment client.
+            Buat program untuk mulai mengatur assessment.
           </p>
         </div>
       ) : (
@@ -999,7 +1027,7 @@ export function ProgramsPage(): JSX.Element {
                       <p className="mt-1 text-sm text-slate-500">
                         {organization
                           ? organization.name
-                          : 'Client belum ditentukan'}
+                          : 'Organisasi belum ditentukan'}
                       </p>
                     </div>
 
@@ -1042,17 +1070,24 @@ export function ProgramsPage(): JSX.Element {
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() =>
-                      void openProgram(
-                        program.id,
-                      )
-                    }
-                    className="mt-5 text-sm font-medium text-blue-600 hover:underline"
-                  >
-                    Buka Program →
-                  </button>
+                  <div className="mt-5 flex flex-wrap items-center gap-3">
+                    {onOpenParticipants ? (
+                      <button
+                        type="button"
+                        onClick={() => onOpenParticipants(program.id)}
+                        className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                      >
+                        Kelola Peserta
+                      </button>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => void openProgram(program.id)}
+                      className="text-sm font-medium text-blue-600 hover:underline"
+                    >
+                      Lihat Detail
+                    </button>
+                  </div>
                 </article>
               );
             },
@@ -1165,224 +1200,93 @@ function ProgramFormModal({
   organizations: OrganizationDto[];
   busy: boolean;
   error: string | null;
-  onChange:
-    (
-      value:
-        ProgramFormState,
-    ) => void;
-  onSubmit:
-    (
-      event: FormEvent,
-    ) => Promise<void>;
+  onChange: (value: ProgramFormState) => void;
+  onSubmit: (event: FormEvent) => Promise<void>;
   onClose: () => void;
 }): JSX.Element {
-  const inputClass =
-    'mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm';
+  const inputClass = 'mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm';
 
   return (
-    <Modal
-      title={
-        mode === 'create'
-          ? 'Buat Program Assessment'
-          : 'Edit Program Assessment'
-      }
-      onClose={onClose}
-    >
-      <form
-        onSubmit={(event) =>
-          void onSubmit(event)
-        }
-        className="space-y-3"
-      >
+    <Modal title={mode === 'create' ? 'Buat Program Assessment' : 'Ubah Program Assessment'} onClose={onClose}>
+      <form onSubmit={(event) => void onSubmit(event)} className="space-y-3">
         <div>
-          <label className="block text-xs font-medium text-slate-600">
-            Client/Organisasi
-          </label>
-
-          <select
-            required
-            value={
-              form.organizationId
-            }
-            onChange={(event) =>
-              onChange({
-                ...form,
-                organizationId:
-                  event.target.value,
-              })
-            }
-            className={inputClass}
-          >
-            <option value="">
-              Pilih client...
-            </option>
-
-            {organizations.map(
-              (organization) => (
-                <option
-                  key={
-                    organization.id
-                  }
-                  value={
-                    organization.id
-                  }
-                >
-                  {organization.code}
-                  {' — '}
-                  {organization.name}
-                </option>
-              ),
-            )}
-          </select>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <label className="block text-xs font-medium text-slate-600">
-              Kode Program
-            </label>
-
-            <input
-              required
-              value={form.code}
-              onChange={(event) =>
-                onChange({
-                  ...form,
-                  code:
-                    event.target.value,
-                })
-              }
-              className={inputClass}
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-slate-600">
-              Tahun
-            </label>
-
-            <input
-              type="number"
-              value={form.year}
-              onChange={(event) =>
-                onChange({
-                  ...form,
-                  year:
-                    event.target.value,
-                })
-              }
-              className={inputClass}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-slate-600">
-            Nama Program
-          </label>
-
+          <label className="block text-xs font-medium text-slate-600">Nama Program</label>
           <input
             required
+            autoFocus
             value={form.name}
-            onChange={(event) =>
-              onChange({
-                ...form,
-                name:
-                  event.target.value,
-              })
-            }
-            className={inputClass}
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-slate-600">
-            Deskripsi
-          </label>
-
-          <textarea
-            rows={3}
-            value={
-              form.description
-            }
-            onChange={(event) =>
-              onChange({
-                ...form,
-                description:
-                  event.target.value,
-              })
-            }
+            onChange={(event) => onChange({
+              ...form,
+              name: event.target.value,
+            })}
+            placeholder="Sarel - 360 Degree Assesment"
             className={inputClass}
           />
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
-            <label className="block text-xs font-medium text-slate-600">
-              Tanggal Mulai
-            </label>
-
+            <label className="block text-xs font-medium text-slate-600">Tahun</label>
             <input
-              type="date"
-              value={
-                form.startDate
-              }
-              onChange={(event) =>
-                onChange({
-                  ...form,
-                  startDate:
-                    event.target.value,
-                })
-              }
+              type="number"
+              min={2000}
+              max={2100}
+              value={form.year}
+              onChange={(event) => onChange({ ...form, year: event.target.value })}
               className={inputClass}
             />
           </div>
-
           <div>
-            <label className="block text-xs font-medium text-slate-600">
-              Tanggal Selesai
-            </label>
-
+            <label className="block text-xs font-medium text-slate-600">Kode Program</label>
             <input
-              type="date"
-              value={
-                form.endDate
-              }
-              onChange={(event) =>
-                onChange({
-                  ...form,
-                  endDate:
-                    event.target.value,
-                })
-              }
+              value={form.code}
+              onChange={(event) => onChange({ ...form, code: event.target.value })}
+              placeholder="Dibuat otomatis"
               className={inputClass}
             />
           </div>
         </div>
 
-        {error ? (
-          <p className="text-sm text-red-600">
-            {error}
-          </p>
-        ) : null}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="block text-xs font-medium text-slate-600">Tanggal Mulai</label>
+            <input type="date" value={form.startDate} onChange={(event) => onChange({ ...form, startDate: event.target.value })} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600">Tanggal Selesai</label>
+            <input type="date" value={form.endDate} onChange={(event) => onChange({ ...form, endDate: event.target.value })} className={inputClass} />
+          </div>
+        </div>
+
+        <details className="rounded-lg border border-slate-200 p-3">
+          <summary className="cursor-pointer text-sm font-medium text-slate-700">Pengaturan tambahan</summary>
+          <div className="mt-3 space-y-3">
+            {organizations.length > 1 ? (
+              <div>
+                <label className="block text-xs font-medium text-slate-600">Organisasi</label>
+                <select required value={form.organizationId} onChange={(event) => onChange({ ...form, organizationId: event.target.value })} className={inputClass}>
+                  <option value="">Pilih organisasi...</option>
+                  {organizations.map((organization) => (
+                    <option key={organization.id} value={organization.id}>{organization.name}</option>
+                  ))}
+                </select>
+              </div>
+            ) : organizations[0] ? (
+              <p className="text-sm text-slate-500">Organisasi: <strong className="text-slate-700">{organizations[0].name}</strong></p>
+            ) : null}
+            <div>
+              <label className="block text-xs font-medium text-slate-600">Deskripsi</label>
+              <textarea rows={3} value={form.description} onChange={(event) => onChange({ ...form, description: event.target.value })} className={inputClass} />
+            </div>
+          </div>
+        </details>
+
+        {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
         <div className="flex justify-end gap-2 pt-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100"
-          >
-            Batal
-          </button>
-
-          <button
-            type="submit"
-            disabled={busy}
-            className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-          >
-            {busy
-              ? 'Menyimpan...'
-              : 'Simpan Program'}
+          <button type="button" onClick={onClose} className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">Batal</button>
+          <button type="submit" disabled={busy || !form.organizationId} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60">
+            {busy ? 'Menyimpan...' : 'Simpan Program'}
           </button>
         </div>
       </form>

@@ -270,7 +270,10 @@ export class ImportService {
     if (job.type === 'PARTICIPANT') {
       const inserts: NewParticipant[] = [];
       for (const r of rows) {
-        const data = JSON.parse(r.normalized ?? '{}') as { userDbId: string; batchId: string };
+        const data = JSON.parse(r.normalized ?? '{}') as {
+          userDbId: string;
+          batchId: string | null;
+        };
         if (!withinScope(data.batchId, program.organizationId)) {
           throw new AppError('FORBIDDEN', 'Sebuah baris tidak lagi berada dalam scope Anda.', 403);
         }

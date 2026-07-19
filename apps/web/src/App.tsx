@@ -17,7 +17,7 @@ import { ProgramFirstModulePage } from './pages/admin/ProgramFirstModulePage';
 import { UsersPage } from './pages/admin/UsersPage';
 import { ProgramsPage } from './pages/admin/ProgramsPage';
 import { AdminScopesPage } from './pages/admin/AdminScopesPage';
-import { ParticipantsPage } from './pages/admin/ParticipantsPage';
+import { ParticipantManagementPage } from './pages/admin/ParticipantManagementPage';
 import { PublicFormsPage } from './pages/admin/PublicFormsPage';
 import { EvaluatorDashboardPage } from './pages/evaluator/EvaluatorDashboardPage';
 import { ParticipantAssessmentPage } from './pages/participant/ParticipantAssessmentPage';
@@ -30,6 +30,9 @@ function AdminWorkspace(): JSX.Element {
 
   const [view, setView] =
     useState('dashboard');
+
+  const [programContextId, setProgramContextId] =
+    useState('');
 
   const items =
     useMemo<NavItem[]>(() => {
@@ -218,10 +221,18 @@ function AdminWorkspace(): JSX.Element {
         <UsersPage />
       ) : active ===
         'programs' ? (
-        <ProgramsPage />
+        <ProgramsPage
+          onOpenParticipants={(programId) => {
+            setProgramContextId(programId);
+            setView('participants');
+          }}
+        />
       ) : active ===
         'participants' ? (
-        <ParticipantsPage />
+        <ParticipantManagementPage
+          initialProgramId={programContextId}
+          onProgramChange={setProgramContextId}
+        />
       ) : active ===
         'form-builder' ? (
         <PublicFormsPage />
@@ -229,36 +240,46 @@ function AdminWorkspace(): JSX.Element {
         'assignments' ? (
         <ProgramFirstModulePage
           title="Penugasan Assessment"
-          description="Pilih Program Assessment sebelum mengatur assignment SELF dan OTHER."
-          workspaceDescription="Assignment SELF dan OTHER, form, versi form, peserta, batch, relasi penilai, serta periode pengerjaan akan dikelola khusus untuk program ini."
+          description="Program dipilih otomatis saat hanya ada satu program aktif."
+          workspaceDescription="Pilih form, Batch atau peserta, jenis penilaian, dan periode dalam satu alur."
+          initialProgramId={programContextId}
+          onProgramChange={setProgramContextId}
         />
       ) : active ===
         'monitoring' ? (
         <ProgramFirstModulePage
           title="Monitoring Pengerjaan"
-          description="Pilih Program Assessment untuk melihat progres peserta dan assignment."
-          workspaceDescription="Ringkasan SELF dan OTHER, status peserta, tenggat waktu, keterlambatan, serta progress setiap assignment akan ditampilkan khusus untuk program ini."
+          description="Pilih program untuk melihat progres pengerjaan."
+          workspaceDescription="Lihat jumlah yang belum mulai, sedang mengisi, dan sudah selesai sebelum membuka detail peserta."
+          initialProgramId={programContextId}
+          onProgramChange={setProgramContextId}
         />
       ) : active ===
         'history' ? (
         <ProgramFirstModulePage
           title="Histori Pengerjaan"
-          description="Pilih Program Assessment sebelum menelusuri histori setiap peserta."
-          workspaceDescription="Daftar peserta akan ditampilkan terlebih dahulu, kemudian histori mulai, autosave, submit, reset, force submit, dan perubahan status dapat ditelusuri per peserta."
+          description="Pilih program lalu cari peserta yang akan diperiksa."
+          workspaceDescription="Cari peserta terlebih dahulu, lalu lihat riwayat pengerjaannya secara berurutan."
+          initialProgramId={programContextId}
+          onProgramChange={setProgramContextId}
         />
       ) : active ===
         'answers-results' ? (
         <ProgramFirstModulePage
           title="Jawaban & Hasil"
-          description="Pilih Program Assessment sebelum melihat jawaban dan hasil peserta."
-          workspaceDescription="Hasil SELF, OTHER, perbandingan SELF vs OTHER, hasil per level penilai, serta detail jawaban akan ditampilkan per peserta dan assignment."
+          description="Pilih program lalu cari peserta yang akan dilihat hasilnya."
+          workspaceDescription="Tampilkan ringkasan hasil terlebih dahulu, lalu buka perbandingan dan detail jawaban saat diperlukan."
+          initialProgramId={programContextId}
+          onProgramChange={setProgramContextId}
         />
       ) : active ===
         'reports' ? (
         <ProgramFirstModulePage
           title="Laporan & Export"
-          description="Pilih Program Assessment yang akan dibuatkan laporan atau export."
-          workspaceDescription="Laporan peserta, relasi, assignment, monitoring, hasil individual, hasil kelompok, dan export akan dibatasi hanya untuk program yang dipilih."
+          description="Pilih program yang akan dibuatkan laporan."
+          workspaceDescription="Pilih jenis laporan lalu unduh hasil untuk program yang sedang dibuka."
+          initialProgramId={programContextId}
+          onProgramChange={setProgramContextId}
         />
       ) : active ===
         'scopes' ? (

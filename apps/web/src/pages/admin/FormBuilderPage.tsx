@@ -691,7 +691,7 @@ export function FormBuilderPage({
           </h1>
 
           <p className="mt-1 text-sm text-slate-500">
-            Buat dan sesuaikan formulir secara manual.
+            Susun bagian dan pertanyaan, lalu pratinjau sebelum diterbitkan.
           </p>
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -718,7 +718,7 @@ export function FormBuilderPage({
                 >
                   {disconnectingSheet
                     ? 'Melepas...'
-                    : 'Unlink Sheet'}
+                    : 'Lepas Sheet'}
                 </button>
               </>
             ) : (
@@ -750,7 +750,7 @@ export function FormBuilderPage({
             >
               {record.status ===
               'PUBLISHED'
-                ? 'Published'
+                ? 'Terbit'
                 : 'Draft'}
             </span>
           ) : null}
@@ -779,8 +779,8 @@ export function FormBuilderPage({
               ? 'Memproses...'
               : record?.status ===
                   'PUBLISHED'
-                ? 'Unpublish'
-                : 'Publish'}
+                ? 'Batalkan Terbit'
+                : 'Terbitkan'}
           </button>
 
           <button
@@ -793,7 +793,7 @@ export function FormBuilderPage({
           >
             {saving
               ? 'Menyimpan...'
-              : 'Simpan Draft'}
+              : 'Simpan'}
           </button>
 
           <button
@@ -803,7 +803,7 @@ export function FormBuilderPage({
             }
             className="rounded-lg border border-blue-600 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50"
           >
-            Preview
+            Pratinjau
           </button>
         </div>
       </div>

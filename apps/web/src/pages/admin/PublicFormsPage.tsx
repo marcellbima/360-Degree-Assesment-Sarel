@@ -159,11 +159,11 @@ export function PublicFormsPage(): JSX.Element {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold text-slate-800">
-            Form Publik
+            Form Builder
           </h1>
 
           <p className="mt-1 text-sm text-slate-500">
-            Kelola draft dan formulir yang telah dipublikasikan.
+            Buat, pratinjau, dan terbitkan form assessment dari satu tempat.
           </p>
         </div>
 
@@ -175,7 +175,7 @@ export function PublicFormsPage(): JSX.Element {
           }}
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
         >
-          Buat Form Baru
+          Buat Form
         </button>
       </div>
 
@@ -260,7 +260,7 @@ export function PublicFormsPage(): JSX.Element {
                       >
                         {form.status ===
                         'PUBLISHED'
-                          ? 'Published'
+                          ? 'Terbit'
                           : 'Draft'}
                       </span>
                     </td>

@@ -111,7 +111,7 @@ export class D1UserAdminRepository implements UserAdminRepositoryPort {
   }
 
   async existsByUserId(userId: string): Promise<boolean> {
-    const r = await this.db.select({ id: users.id }).from(users).where(eq(users.userId, userId)).get();
+    const r = await this.db.select({ id: users.id }).from(users).where(sql`lower(${users.userId}) = lower(${userId})`).get();
     return r != null;
   }
 

@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type { UserRecord, UserRepositoryPort } from '@sarel/core';
 import type { Db } from '../client';
 import { permissions, rolePermissions, roles, userRoles, users } from '../schema/schema';
@@ -23,7 +23,7 @@ export class D1UserRepository implements UserRepositoryPort {
   }
 
   async findByUserId(userId: string): Promise<UserRecord | null> {
-    const row = await this.db.select().from(users).where(eq(users.userId, userId)).get();
+    const row = await this.db.select().from(users).where(sql`lower(${users.userId}) = lower(${userId})`).get();
     return row ? this.toRecord(row) : null;
   }
 

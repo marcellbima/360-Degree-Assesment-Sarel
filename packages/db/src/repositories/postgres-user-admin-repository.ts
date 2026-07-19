@@ -221,10 +221,7 @@ export class PostgresUserAdminRepository
         })
         .from(users)
         .where(
-          eq(
-            users.userId,
-            userId,
-          ),
+          sql`lower(${users.userId}) = lower(${userId})`,
         )
         .limit(1);
 

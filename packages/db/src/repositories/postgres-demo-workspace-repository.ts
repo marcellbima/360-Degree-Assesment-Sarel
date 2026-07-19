@@ -31,9 +31,9 @@ export const DEMO_WORKSPACE_IDS = {
 
 export const DEMO_WORKSPACE_CODES = {
   organization:
-    'DEMO_AHM',
+    'SAREL',
   program:
-    'DEMO_QTC_2026',
+    'SAREL_360 Degree_2026',
 } as const;
 
 export class PostgresDemoWorkspaceRepository
@@ -132,7 +132,7 @@ export class PostgresDemoWorkspaceRepository
               DEMO_WORKSPACE_CODES
                 .organization,
             name:
-              '[CONTOH] Astra Honda Motor',
+              'Sarel',
             status: 'ACTIVE',
             createdAt: now,
             updatedAt: now,
@@ -145,7 +145,7 @@ export class PostgresDemoWorkspaceRepository
                 DEMO_WORKSPACE_CODES
                   .organization,
               name:
-                '[CONTOH] Astra Honda Motor',
+                'Sarel',
               status: 'ACTIVE',
               updatedAt: now,
             },
@@ -161,9 +161,9 @@ export class PostgresDemoWorkspaceRepository
               DEMO_WORKSPACE_CODES
                 .program,
             name:
-              '[CONTOH] Qualified Trainer Clustering 2026',
+              'Sarel - 360 Degree Assesment',
             description:
-              'Program contoh assessment Qualified Trainer Clustering Astra Honda Motor.',
+              'Program 360 Degree Assesment Sarel tahun 2026.',
             year: 2026,
             startDate:
               '2026-04-20',
@@ -184,9 +184,9 @@ export class PostgresDemoWorkspaceRepository
                 DEMO_WORKSPACE_CODES
                   .program,
               name:
-                '[CONTOH] Qualified Trainer Clustering 2026',
+                'Sarel - 360 Degree Assesment',
               description:
-                'Program contoh assessment Qualified Trainer Clustering Astra Honda Motor.',
+                'Program 360 Degree Assesment Sarel tahun 2026.',
               year: 2026,
               startDate:
                 '2026-04-20',
@@ -207,9 +207,9 @@ export class PostgresDemoWorkspaceRepository
                 .batches[0],
             code: 'A',
             name:
-              '[CONTOH] Batch A',
+              '360 Degree Batch A',
             description:
-              'Batch contoh kelompok A.',
+              'Kelompok peserta 360 Degree Assesment Batch A.',
             orderIndex: 1,
             startDate:
               '2026-04-20',
@@ -222,9 +222,9 @@ export class PostgresDemoWorkspaceRepository
                 .batches[1],
             code: 'B',
             name:
-              '[CONTOH] Batch B',
+              '360 Degree Batch B',
             description:
-              'Batch contoh kelompok B.',
+              'Kelompok peserta 360 Degree Assesment Batch B.',
             orderIndex: 2,
             startDate:
               '2026-05-01',
@@ -237,9 +237,9 @@ export class PostgresDemoWorkspaceRepository
                 .batches[2],
             code: 'C',
             name:
-              '[CONTOH] Batch C',
+              '360 Degree Batch C',
             description:
-              'Batch contoh kelompok C.',
+              'Kelompok peserta 360 Degree Assesment Batch C.',
             orderIndex: 3,
             startDate:
               '2026-06-01',

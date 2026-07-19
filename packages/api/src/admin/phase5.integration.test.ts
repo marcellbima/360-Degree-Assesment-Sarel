@@ -154,6 +154,80 @@ describe('Phase 5 integration', () => {
     expect(((await list.json()) as { total: number }).total).toBe(1);
   });
 
+  it('participant import Tanpa Batch: preview lalu commit', async () => {
+    const {
+      h,
+      superCookie,
+    } = await base();
+
+    const preview = await req(
+      h,
+      'POST',
+      '/api/admin/imports/participants/preview',
+      superCookie,
+      {
+        programId: 'prog_1',
+        fileName: 'participant-tanpa-batch.csv',
+        rows: [
+          {
+            rowNumber: 2,
+            userId: 'u1',
+            batchCode: '',
+          },
+        ],
+      },
+    );
+
+    expect(preview.status).toBe(200);
+
+    const previewBody =
+      (await preview.json()) as {
+        job: {
+          id: string;
+          validRows: number;
+          errorRows: number;
+        };
+      };
+
+    expect(previewBody.job.validRows).toBe(1);
+    expect(previewBody.job.errorRows).toBe(0);
+
+    const commit = await req(
+      h,
+      'POST',
+      `/api/admin/import-jobs/${previewBody.job.id}/commit`,
+      superCookie,
+    );
+
+    expect(commit.status).toBe(200);
+
+    const list = await req(
+      h,
+      'GET',
+      '/api/admin/programs/prog_1/participants',
+      superCookie,
+    );
+
+    expect(list.status).toBe(200);
+
+    const listBody =
+      (await list.json()) as {
+        items: Array<{
+          userCode: string;
+          batchId: string | null;
+        }>;
+      };
+
+    const participant =
+      listBody.items.find(
+        (item) =>
+          item.userCode === 'u1',
+      );
+
+    expect(participant).toBeDefined();
+    expect(participant?.batchId).toBeNull();
+  });
+
   it('preview dengan ERROR tidak dapat di-commit', async () => {
     const { h, superCookie } = await base();
     const preview = await req(h, 'POST', '/api/admin/imports/participants/preview', superCookie, {

@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, like, or, type SQL } from 'drizzle-orm';
+import { isNull, and, asc, count, desc, eq, like, or, type SQL } from 'drizzle-orm';
 import type {
   NewParticipant,
   ParticipantListFilter,
@@ -27,7 +27,7 @@ const SELECT = {
   email: users.email,
   programId: programs.id,
   programCode: programs.code,
-  batchId: batches.id,
+  batchId: programParticipants.batchId,
   batchCode: batches.code,
   organizationId: programParticipants.organizationId,
   status: programParticipants.status,
@@ -45,14 +45,18 @@ export class D1ParticipantRepository implements ParticipantRepositoryPort {
       .from(programParticipants)
       .innerJoin(users, eq(users.id, programParticipants.userId))
       .innerJoin(programs, eq(programs.id, programParticipants.programId))
-      .innerJoin(batches, eq(batches.id, programParticipants.batchId));
+      .leftJoin(batches, eq(batches.id, programParticipants.batchId));
   }
 
   async list(filter: ParticipantListFilter): Promise<{ items: ParticipantRow[]; total: number }> {
     const conds: SQL[] = [eq(programParticipants.programId, filter.programId)];
     const scopeWhere = participantScopeWhere(filter.scope);
     if (scopeWhere) conds.push(scopeWhere);
-    if (filter.batchId) conds.push(eq(programParticipants.batchId, filter.batchId));
+    if (filter.withoutBatch) {
+      conds.push(isNull(programParticipants.batchId));
+    } else if (filter.batchId) {
+      conds.push(eq(programParticipants.batchId, filter.batchId));
+    }
     if (filter.status) conds.push(eq(programParticipants.status, filter.status));
     if (filter.search) {
       const q = `%${filter.search}%`;
