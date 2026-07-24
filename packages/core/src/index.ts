@@ -195,6 +195,7 @@ export type {
   PublicFormRepositoryPort,
   PublicFormRow,
   PublicFormSection,
+  PublicFormVersionRow,
   PublicFormSubmissionRow,
   PublishPublicFormInput,
 } from './ports/public-form-repository';
