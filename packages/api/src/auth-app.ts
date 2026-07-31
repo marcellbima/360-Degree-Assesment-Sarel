@@ -9,6 +9,7 @@ import { authMiddleware } from './middleware/auth';
 import type {
   ApiDeps,
   ApiEnv,
+  AssessmentAssignmentApiDeps,
   AuthApiDeps,
   HealthApiDeps,
   PublicFormApiDeps,
@@ -18,6 +19,9 @@ import { healthRoutes } from './routes/health';
 import {
   publicFormAdminRoutes,
 } from './routes/admin/public-forms';
+import {
+  assessmentAssignmentRoutes,
+} from './routes/admin/assessment-assignments';
 import {
   userAdminRoutes,
 } from './routes/admin/users';
@@ -50,6 +54,7 @@ export type AuthHealthApiDeps =
   AuthApiDeps &
   HealthApiDeps &
   PublicFormApiDeps &
+  AssessmentAssignmentApiDeps &
   Pick<
     ApiDeps,
     | 'userAdminService'
@@ -132,6 +137,11 @@ export function createAuthApiApp(
   app.route(
     API_PREFIX,
     demoWorkspaceRoutes(deps),
+  );
+
+  app.route(
+    API_PREFIX,
+    assessmentAssignmentRoutes(deps),
   );
 
   app.route(

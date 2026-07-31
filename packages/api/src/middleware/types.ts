@@ -1,5 +1,6 @@
 import type {
   AdminScopeService,
+  AssessmentAssignmentService,
   AssessmentTargetService,
   AuthPrincipal,
   AuthService,
@@ -32,6 +33,11 @@ export interface HealthApiDeps {
 
 export interface PublicFormApiDeps {
   publicFormService: PublicFormService;
+}
+
+export interface AssessmentAssignmentApiDeps {
+  assessmentAssignmentService:
+    AssessmentAssignmentService;
 }
 
 export interface ApiDeps
