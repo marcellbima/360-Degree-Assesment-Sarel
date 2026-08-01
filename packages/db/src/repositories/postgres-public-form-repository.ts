@@ -16,6 +16,7 @@ import type {
   PublicFormListFilter,
   PublicFormRepositoryPort,
   PublicFormRow,
+  PublicFormVersionRow,
   PublishPublicFormInput,
 } from '@sarel/core';
 
@@ -23,6 +24,7 @@ import type { PostgresDatabase } from '../postgres-client';
 import {
   publicForms,
   publicFormSubmissions,
+  publicFormVersions,
 } from '../schema/postgres-schema';
 
 type PublicFormDatabaseRow =
@@ -231,19 +233,78 @@ export class PostgresPublicFormRepository
   async publish(
     id: string,
     input: PublishPublicFormInput,
-  ): Promise<void> {
-    await this.db
-      .update(publicForms)
-      .set({
-        status: 'PUBLISHED',
-        publishedDefinition:
-          input.publishedDefinition,
-        opensAt: input.opensAt,
-        closesAt: input.closesAt,
-        publishedAt: input.publishedAt,
-        updatedAt: input.updatedAt,
-      })
-      .where(eq(publicForms.id, id));
+  ): Promise<PublicFormVersionRow> {
+    return await this.db.transaction(
+      async (tx) => {
+        /*
+         * Lock parent form memastikan dua
+         * permintaan Publish tidak memperoleh
+         * nomor versi yang sama.
+         */
+        await tx.execute(sql`
+          SELECT
+            ${publicForms.id}
+          FROM
+            ${publicForms}
+          WHERE
+            ${publicForms.id} = ${id}
+          FOR UPDATE
+        `);
+
+        const [latest] = await tx
+          .select({
+            value:
+              sql<number>`COALESCE(MAX(${publicFormVersions.versionNumber}), 0)`,
+          })
+          .from(publicFormVersions)
+          .where(
+            eq(
+              publicFormVersions.publicFormId,
+              id,
+            ),
+          );
+
+        const versionNumber =
+          Number(latest?.value ?? 0) + 1;
+
+        const version:
+          PublicFormVersionRow = {
+            id: input.versionId,
+            publicFormId: id,
+            versionNumber,
+            definition:
+              input.publishedDefinition,
+            publishedAt:
+              input.publishedAt,
+            createdBy:
+              input.createdBy,
+            createdAt:
+              input.publishedAt,
+          };
+
+        await tx
+          .insert(publicFormVersions)
+          .values(version);
+
+        await tx
+          .update(publicForms)
+          .set({
+            status: 'PUBLISHED',
+            publishedDefinition:
+              input.publishedDefinition,
+            opensAt: input.opensAt,
+            closesAt: input.closesAt,
+            publishedAt:
+              input.publishedAt,
+            updatedAt: input.updatedAt,
+          })
+          .where(
+            eq(publicForms.id, id),
+          );
+
+        return version;
+      },
+    );
   }
 
   async unpublish(
@@ -306,21 +367,64 @@ export class PostgresPublicFormRepository
 
   async deleteById(
     id: string,
-  ): Promise<void> {
-    await this.db
-      .delete(publicFormSubmissions)
-      .where(
-        eq(
-          publicFormSubmissions.formId,
-          id,
-        ),
-      );
+  ): Promise<boolean> {
+    return await this.db.transaction(
+      async (tx) => {
+        /*
+         * Publish dan Delete menggunakan lock
+         * yang sama untuk mencegah race
+         * condition.
+         */
+        await tx.execute(sql`
+          SELECT
+            ${publicForms.id}
+          FROM
+            ${publicForms}
+          WHERE
+            ${publicForms.id} = ${id}
+          FOR UPDATE
+        `);
 
-    await this.db
-      .delete(publicForms)
-      .where(
-        eq(publicForms.id, id),
-      );
+        const [versionTotal] =
+          await tx
+            .select({
+              value: count(),
+            })
+            .from(publicFormVersions)
+            .where(
+              eq(
+                publicFormVersions.publicFormId,
+                id,
+              ),
+            );
+
+        if (
+          (versionTotal?.value ?? 0) > 0
+        ) {
+          return false;
+        }
+
+        await tx
+          .delete(publicFormSubmissions)
+          .where(
+            eq(
+              publicFormSubmissions.formId,
+              id,
+            ),
+          );
+
+        const deleted = await tx
+          .delete(publicForms)
+          .where(
+            eq(publicForms.id, id),
+          )
+          .returning({
+            id: publicForms.id,
+          });
+
+        return deleted.length > 0;
+      },
+    );
   }
 
   async insertSubmission(

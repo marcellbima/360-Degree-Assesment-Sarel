@@ -587,6 +587,7 @@ export class PublicFormService {
   async publish(
     id: string,
     input: PublishPublicFormScheduleInput,
+    ctx: AdminContext,
   ): Promise<PublicFormRow> {
     const row = await this.get(id);
 
@@ -619,12 +620,14 @@ export class PublicFormService {
       this.clock.now().toISOString();
 
     await this.repo.publish(id, {
+      versionId: generateId('pfv'),
       publishedDefinition:
         row.draftDefinition,
       opensAt,
       closesAt,
       publishedAt: now,
       updatedAt: now,
+      createdBy: ctx.actor.id,
     });
 
     return {
@@ -668,7 +671,16 @@ export class PublicFormService {
   }> {
     await this.get(id);
 
-    await this.repo.deleteById(id);
+    const deleted =
+      await this.repo.deleteById(id);
+
+    if (!deleted) {
+      throw new AppError(
+        'CONFLICT',
+        'Formulir yang pernah dipublikasikan tidak dapat dihapus karena versi historis harus tetap tersimpan.',
+        409,
+      );
+    }
 
     return {
       id,

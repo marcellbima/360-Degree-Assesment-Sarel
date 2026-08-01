@@ -10,6 +10,7 @@ export type {
   ApiAuthConfig,
   ApiDeps,
   ApiEnv,
+  AssessmentAssignmentApiDeps,
   AuthApiDeps,
   HealthApiDeps,
   PublicFormApiDeps,

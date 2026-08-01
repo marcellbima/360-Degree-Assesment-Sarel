@@ -2,6 +2,7 @@ import { serve } from '@hono/node-server';
 import { createAuthApiApp } from '@sarel/api';
 import {
   AdminAuditWriter,
+  AssessmentAssignmentService,
   AssessmentTargetService,
   EvaluatorRelationService,
   ParticipantService,
@@ -24,6 +25,7 @@ import {
   createPostgresDatabase,
   createPostgresPool,
   PostgresAdminScopeRepository,
+  PostgresAssessmentAssignmentRepository,
   PostgresAssessmentTypeRepository,
   PostgresEvaluatorRelationRepository,
   PostgresParticipantRepository,
@@ -344,6 +346,26 @@ const importService =
       adminAudit,
   });
 
+const assessmentAssignmentRepository =
+  new PostgresAssessmentAssignmentRepository(
+    db,
+  );
+
+const assessmentAssignmentService =
+  new AssessmentAssignmentService({
+    assignments:
+      assessmentAssignmentRepository,
+    programs:
+      programRepository,
+    assessmentTypes:
+      assessmentTypeRepository,
+    scopes:
+      adminScopes,
+    clock,
+    audit:
+      adminAudit,
+  });
+
 const demoWorkspaceService =
   new DemoWorkspaceService(
     new PostgresDemoWorkspaceRepository(
@@ -357,6 +379,7 @@ const app =
   createAuthApiApp({
     healthService,
     publicFormService,
+    assessmentAssignmentService,
     userAdminService,
     organizationService,
     programService,

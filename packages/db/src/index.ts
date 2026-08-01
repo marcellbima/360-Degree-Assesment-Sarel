@@ -41,6 +41,7 @@ export { PostgresSessionRepository } from './repositories/postgres-session-repos
 export { PostgresOrganizationRepository } from './repositories/postgres-organization-repository';
 export { PostgresProgramRepository } from './repositories/postgres-program-repository';
 export { PostgresPublicFormRepository } from './repositories/postgres-public-form-repository';
+export { PostgresAssessmentAssignmentRepository } from './repositories/postgres-assessment-assignment-repository';
 
 export { PostgresUserAdminRepository } from './repositories/postgres-user-admin-repository';
 export { PostgresAdminScopeRepository } from './repositories/postgres-admin-scope-repository';

@@ -110,6 +110,7 @@ export function publicFormAdminRoutes(
         await service.publish(
           c.req.param('id'),
           input,
+          adminContext(c),
         ),
       );
     },

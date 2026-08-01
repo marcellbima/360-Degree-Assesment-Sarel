@@ -195,6 +195,7 @@ export type {
   PublicFormRepositoryPort,
   PublicFormRow,
   PublicFormSection,
+  PublicFormVersionRow,
   PublicFormSubmissionRow,
   PublishPublicFormInput,
 } from './ports/public-form-repository';
@@ -234,3 +235,24 @@ export type {
 export {
   DemoWorkspaceService,
 } from './admin/demo-workspace-service';
+
+export type {
+  AssessmentAssignmentFormVersionRef,
+  AssessmentAssignmentGroupCreateResult,
+  AssessmentAssignmentRepositoryPort,
+  AssessmentAssignmentSelection,
+  AssessmentAssignmentTypeCode,
+  CreateAssessmentAssignmentGroupRepositoryInput,
+  InitialAssessmentAssignmentStatus,
+  NewAssessmentAssignmentGroup,
+} from './ports/assessment-assignment-repository';
+
+export {
+  AssessmentAssignmentService,
+} from './admin/assessment-assignment-service';
+
+export type {
+  AssessmentAssignmentDeps,
+  AssessmentAssignmentGroupView,
+  CreateAssessmentAssignmentInput,
+} from './admin/assessment-assignment-service';

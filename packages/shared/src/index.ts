@@ -23,3 +23,4 @@ export type {
   ImportPreviewResultDto,
 } from './dto/participant';
 export * from './zod/public-form';
+export * from './zod/assessment-assignment';

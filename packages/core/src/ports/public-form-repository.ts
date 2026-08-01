@@ -71,6 +71,16 @@ export interface PublicFormRow {
   updatedAt: string;
 }
 
+export interface PublicFormVersionRow {
+  id: string;
+  publicFormId: string;
+  versionNumber: number;
+  definition: PublicFormDefinition;
+  publishedAt: string;
+  createdBy: string;
+  createdAt: string;
+}
+
 export interface PublicFormListFilter {
   search?: string;
   status?: string;
@@ -105,12 +115,14 @@ export interface PublicFormDraftPatch {
 }
 
 export interface PublishPublicFormInput {
+  versionId: string;
   publishedDefinition:
     PublicFormDefinition;
   opensAt: string | null;
   closesAt: string | null;
   publishedAt: string;
   updatedAt: string;
+  createdBy: string;
 }
 
 export interface PublicFormSubmissionRow {
@@ -181,7 +193,7 @@ export interface PublicFormRepositoryPort {
   publish(
     id: string,
     input: PublishPublicFormInput,
-  ): Promise<void>;
+  ): Promise<PublicFormVersionRow>;
 
   unpublish(
     id: string,
@@ -200,7 +212,7 @@ export interface PublicFormRepositoryPort {
 
   deleteById(
     id: string,
-  ): Promise<void>;
+  ): Promise<boolean>;
 
   insertSubmission(
     row: NewPublicFormSubmission,
