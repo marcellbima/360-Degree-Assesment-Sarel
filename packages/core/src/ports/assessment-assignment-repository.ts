@@ -22,6 +22,54 @@ export interface AssessmentAssignmentFormVersionRef {
   versionNumber: number;
 }
 
+export interface AssessmentAssignmentFormVersionListFilter {
+  search?: string;
+  limit: number;
+  offset: number;
+}
+
+export interface AssessmentAssignmentFormVersionListItem {
+  id: string;
+  publicFormId: string;
+  formSlug: string;
+  formTitle: string;
+  formDescription: string | null;
+  versionNumber: number;
+  publishedAt: string;
+  sectionCount: number;
+  questionCount: number;
+}
+
+export interface AssessmentAssignmentGroupListFilter {
+  programId: string;
+  search?: string;
+  limit: number;
+  offset: number;
+}
+
+export interface AssessmentAssignmentGroupListItem {
+  id: string;
+  programId: string;
+  publicFormId: string;
+  publicFormVersionId: string;
+  formSlug: string;
+  formTitle: string;
+  versionNumber: number;
+  assessmentType: AssessmentAssignmentTypeCode;
+  name: string;
+  selectionMode: AssessmentAssignmentSelection['mode'];
+  selection: AssessmentAssignmentSelection;
+  selectedParticipantCount: number;
+  candidateAssignmentCount: number;
+  createdAssignmentCount: number;
+  skippedDuplicateCount: number;
+  skippedNoRelationCount: number;
+  status: string;
+  availableFrom: string | null;
+  dueAt: string | null;
+  createdAt: string;
+}
+
 export interface NewAssessmentAssignmentGroup {
   id: string;
   programId: string;
@@ -59,6 +107,16 @@ export interface AssessmentAssignmentGroupCreateResult {
 
 export interface AssessmentAssignmentRepositoryPort {
   findPublicFormVersionById(id: string): Promise<AssessmentAssignmentFormVersionRef | null>;
+
+  listPublicFormVersions(filter: AssessmentAssignmentFormVersionListFilter): Promise<{
+    items: AssessmentAssignmentFormVersionListItem[];
+    total: number;
+  }>;
+
+  listGroups(filter: AssessmentAssignmentGroupListFilter): Promise<{
+    items: AssessmentAssignmentGroupListItem[];
+    total: number;
+  }>;
 
   createGroup(
     input: CreateAssessmentAssignmentGroupRepositoryInput,

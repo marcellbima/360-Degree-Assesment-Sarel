@@ -1,8 +1,10 @@
-import { AppError, MASTER_STATUS_ACTIVE } from '@sarel/shared';
+import { AppError, MASTER_STATUS_ACTIVE, type Paginated } from '@sarel/shared';
 
 import type { AdminScopeRepositoryPort } from '../ports/admin-scope-repository';
 import type {
+  AssessmentAssignmentFormVersionListItem,
   AssessmentAssignmentGroupCreateResult,
+  AssessmentAssignmentGroupListItem,
   AssessmentAssignmentRepositoryPort,
   AssessmentAssignmentSelection,
   AssessmentAssignmentTypeCode,
@@ -17,7 +19,7 @@ import type { ProgramRepositoryPort, ProgramRow } from '../ports/program-reposit
 import { ADMIN_AUDIT_ACTIONS, type AdminAuditWriter } from './audit';
 import { generateId } from './id';
 import { loadScopeFilter } from './scope-util';
-import type { AdminContext, ScopeFilter } from './types';
+import { buildPage, offsetOf, type AdminContext, type ScopeFilter } from './types';
 
 export interface CreateAssessmentAssignmentInput {
   name: string;
@@ -26,6 +28,12 @@ export interface CreateAssessmentAssignmentInput {
   selection: AssessmentAssignmentSelection;
   availableFrom?: string | null;
   dueAt?: string | null;
+}
+
+export interface AssessmentAssignmentListQuery {
+  page: number;
+  pageSize: number;
+  search?: string;
 }
 
 export interface AssessmentAssignmentGroupView extends AssessmentAssignmentGroupCreateResult {
@@ -141,6 +149,56 @@ function validateAssessmentType(type: AssessmentTypeRow, code: AssessmentAssignm
 
 export class AssessmentAssignmentService {
   constructor(private readonly deps: AssessmentAssignmentDeps) {}
+
+  async listFormVersions(
+    query: AssessmentAssignmentListQuery,
+  ): Promise<Paginated<AssessmentAssignmentFormVersionListItem>> {
+    const search = query.search?.trim() || undefined;
+
+    const { items, total } = await this.deps.assignments.listPublicFormVersions({
+      search,
+      limit: query.pageSize,
+      offset: offsetOf(query.page, query.pageSize),
+    });
+
+    return buildPage(items, total, query.page, query.pageSize);
+  }
+
+  async listGroups(
+    programId: string,
+    query: AssessmentAssignmentListQuery,
+    context: AdminContext,
+  ): Promise<Paginated<AssessmentAssignmentGroupListItem>> {
+    const normalizedProgramId = programId.trim();
+
+    if (normalizedProgramId.length === 0) {
+      throw new AppError('VALIDATION_ERROR', 'Program wajib dipilih.', 400);
+    }
+
+    const [program, scope] = await Promise.all([
+      this.deps.programs.findById(normalizedProgramId),
+      loadScopeFilter(this.deps.scopes, context),
+    ]);
+
+    if (!program) {
+      throw new AppError('NOT_FOUND', 'Program tidak ditemukan.', 404);
+    }
+
+    if (!canAccessProgram(scope, program)) {
+      throw new AppError('FORBIDDEN', 'Program berada di luar scope administratif Anda.', 403);
+    }
+
+    const search = query.search?.trim() || undefined;
+
+    const { items, total } = await this.deps.assignments.listGroups({
+      programId: normalizedProgramId,
+      search,
+      limit: query.pageSize,
+      offset: offsetOf(query.page, query.pageSize),
+    });
+
+    return buildPage(items, total, query.page, query.pageSize);
+  }
 
   async create(
     programId: string,

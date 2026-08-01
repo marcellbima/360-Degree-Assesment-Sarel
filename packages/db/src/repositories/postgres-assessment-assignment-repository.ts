@@ -1,10 +1,16 @@
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, inArray, or, type SQL } from 'drizzle-orm';
 import {
   generateId,
+  type AssessmentAssignmentFormVersionListFilter,
+  type AssessmentAssignmentFormVersionListItem,
   type AssessmentAssignmentFormVersionRef,
+  type AssessmentAssignmentGroupListFilter,
+  type AssessmentAssignmentGroupListItem,
   type AssessmentAssignmentRepositoryPort,
   type AssessmentAssignmentSelection,
+  type AssessmentAssignmentTypeCode,
   type CreateAssessmentAssignmentGroupRepositoryInput,
+  type PublicFormDefinition,
   type ScopeFilter,
 } from '@sarel/core';
 
@@ -12,8 +18,10 @@ import type { PostgresDatabase } from '../postgres-client';
 import {
   assessmentAssignmentGroups,
   assessmentAssignments,
+  assessmentTypes,
   evaluatorRelations,
   programParticipants,
+  publicForms,
   publicFormVersions,
   users,
 } from '../schema/postgres-schema';
@@ -80,8 +88,242 @@ function filterSelectedParticipants(
   });
 }
 
+interface StoredAssignmentSelectionSummary {
+  assessmentType?: AssessmentAssignmentTypeCode;
+  selection?: AssessmentAssignmentSelection;
+  selectedParticipantCount?: number;
+  candidateAssignmentCount?: number;
+  skippedNoRelationCount?: number;
+}
+
+function numberValue(value: unknown): number {
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function fallbackSelection(mode: string): AssessmentAssignmentSelection {
+  if (mode === 'BATCHES') {
+    return {
+      mode: 'BATCHES',
+      batchIds: [],
+      includeWithoutBatch: false,
+    };
+  }
+
+  if (mode === 'PARTICIPANTS') {
+    return {
+      mode: 'PARTICIPANTS',
+      participantIds: [],
+    };
+  }
+
+  return {
+    mode: 'ALL_ACTIVE',
+  };
+}
+
 export class PostgresAssessmentAssignmentRepository implements AssessmentAssignmentRepositoryPort {
   constructor(private readonly db: PostgresDatabase) {}
+
+  async listPublicFormVersions(filter: AssessmentAssignmentFormVersionListFilter): Promise<{
+    items: AssessmentAssignmentFormVersionListItem[];
+    total: number;
+  }> {
+    const conditions: SQL[] = [];
+
+    if (filter.search) {
+      const pattern = '%' + filter.search + '%';
+
+      const searchCondition = or(
+        ilike(publicForms.title, pattern),
+        ilike(publicForms.slug, pattern),
+      );
+
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
+    }
+
+    const where = conditions.length > 0 ? and(...conditions) : undefined;
+
+    const [totalRow] = await this.db
+      .select({
+        value: count(),
+      })
+      .from(publicFormVersions)
+      .innerJoin(publicForms, eq(publicForms.id, publicFormVersions.publicFormId))
+      .where(where);
+
+    const rows = await this.db
+      .select({
+        id: publicFormVersions.id,
+        publicFormId: publicFormVersions.publicFormId,
+        formSlug: publicForms.slug,
+        formTitle: publicForms.title,
+        formDescription: publicForms.description,
+        versionNumber: publicFormVersions.versionNumber,
+        publishedAt: publicFormVersions.publishedAt,
+        definition: publicFormVersions.definition,
+      })
+      .from(publicFormVersions)
+      .innerJoin(publicForms, eq(publicForms.id, publicFormVersions.publicFormId))
+      .where(where)
+      .orderBy(asc(publicForms.title), desc(publicFormVersions.versionNumber))
+      .limit(filter.limit)
+      .offset(filter.offset);
+
+    return {
+      items: rows.map((row) => {
+        const definition = row.definition as PublicFormDefinition;
+
+        return {
+          id: row.id,
+          publicFormId: row.publicFormId,
+          formSlug: row.formSlug,
+          formTitle: row.formTitle,
+          formDescription: row.formDescription,
+          versionNumber: row.versionNumber,
+          publishedAt: row.publishedAt,
+          sectionCount: definition.sections.length,
+          questionCount: definition.sections.reduce(
+            (total, section) => total + section.questions.length,
+            0,
+          ),
+        };
+      }),
+      total: numberValue(totalRow?.value),
+    };
+  }
+
+  async listGroups(filter: AssessmentAssignmentGroupListFilter): Promise<{
+    items: AssessmentAssignmentGroupListItem[];
+    total: number;
+  }> {
+    const conditions: SQL[] = [eq(assessmentAssignmentGroups.programId, filter.programId)];
+
+    if (filter.search) {
+      const pattern = '%' + filter.search + '%';
+
+      const searchCondition = or(
+        ilike(assessmentAssignmentGroups.name, pattern),
+        ilike(publicForms.title, pattern),
+        ilike(publicForms.slug, pattern),
+      );
+
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
+    }
+
+    const where = and(...conditions);
+
+    const [totalRow] = await this.db
+      .select({
+        value: count(),
+      })
+      .from(assessmentAssignmentGroups)
+      .innerJoin(
+        publicFormVersions,
+        eq(publicFormVersions.id, assessmentAssignmentGroups.publicFormVersionId),
+      )
+      .innerJoin(publicForms, eq(publicForms.id, publicFormVersions.publicFormId))
+      .innerJoin(
+        assessmentTypes,
+        eq(assessmentTypes.id, assessmentAssignmentGroups.assessmentTypeId),
+      )
+      .where(where);
+
+    const rows = await this.db
+      .select({
+        id: assessmentAssignmentGroups.id,
+        programId: assessmentAssignmentGroups.programId,
+        publicFormId: publicFormVersions.publicFormId,
+        publicFormVersionId: assessmentAssignmentGroups.publicFormVersionId,
+        formSlug: publicForms.slug,
+        formTitle: publicForms.title,
+        versionNumber: publicFormVersions.versionNumber,
+        assessmentType: assessmentTypes.code,
+        name: assessmentAssignmentGroups.name,
+        selectionMode: assessmentAssignmentGroups.selectionMode,
+        selectionSummary: assessmentAssignmentGroups.selectionSummary,
+        status: assessmentAssignmentGroups.status,
+        availableFrom: assessmentAssignmentGroups.availableFrom,
+        dueAt: assessmentAssignmentGroups.dueAt,
+        createdAt: assessmentAssignmentGroups.createdAt,
+      })
+      .from(assessmentAssignmentGroups)
+      .innerJoin(
+        publicFormVersions,
+        eq(publicFormVersions.id, assessmentAssignmentGroups.publicFormVersionId),
+      )
+      .innerJoin(publicForms, eq(publicForms.id, publicFormVersions.publicFormId))
+      .innerJoin(
+        assessmentTypes,
+        eq(assessmentTypes.id, assessmentAssignmentGroups.assessmentTypeId),
+      )
+      .where(where)
+      .orderBy(desc(assessmentAssignmentGroups.createdAt))
+      .limit(filter.limit)
+      .offset(filter.offset);
+
+    const groupIds = rows.map((row) => row.id);
+
+    const assignmentCounts = new Map<string, number>();
+
+    if (groupIds.length > 0) {
+      const countRows = await this.db
+        .select({
+          groupId: assessmentAssignments.assignmentGroupId,
+          value: count(),
+        })
+        .from(assessmentAssignments)
+        .where(inArray(assessmentAssignments.assignmentGroupId, groupIds))
+        .groupBy(assessmentAssignments.assignmentGroupId);
+
+      for (const row of countRows) {
+        if (row.groupId) {
+          assignmentCounts.set(row.groupId, numberValue(row.value));
+        }
+      }
+    }
+
+    return {
+      items: rows.map((row) => {
+        const summary = row.selectionSummary as StoredAssignmentSelectionSummary;
+
+        const selection = summary.selection ?? fallbackSelection(row.selectionMode);
+
+        const candidateAssignmentCount = numberValue(summary.candidateAssignmentCount);
+
+        const createdAssignmentCount = assignmentCounts.get(row.id) ?? 0;
+
+        return {
+          id: row.id,
+          programId: row.programId,
+          publicFormId: row.publicFormId,
+          publicFormVersionId: row.publicFormVersionId,
+          formSlug: row.formSlug,
+          formTitle: row.formTitle,
+          versionNumber: row.versionNumber,
+          assessmentType: row.assessmentType as AssessmentAssignmentTypeCode,
+          name: row.name,
+          selectionMode: row.selectionMode as AssessmentAssignmentSelection['mode'],
+          selection,
+          selectedParticipantCount: numberValue(summary.selectedParticipantCount),
+          candidateAssignmentCount,
+          createdAssignmentCount,
+          skippedDuplicateCount: Math.max(0, candidateAssignmentCount - createdAssignmentCount),
+          skippedNoRelationCount: numberValue(summary.skippedNoRelationCount),
+          status: row.status,
+          availableFrom: row.availableFrom,
+          dueAt: row.dueAt,
+          createdAt: row.createdAt,
+        };
+      }),
+      total: numberValue(totalRow?.value),
+    };
+  }
 
   async findPublicFormVersionById(id: string): Promise<AssessmentAssignmentFormVersionRef | null> {
     const rows = await this.db

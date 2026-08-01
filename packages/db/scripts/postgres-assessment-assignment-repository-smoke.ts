@@ -466,7 +466,76 @@ try {
     'Selection summary Assignment Group tidak sesuai.',
   );
 
+  const versionList = await repository.listPublicFormVersions({
+    search: 'Smoke Assignment Form',
+    limit: 20,
+    offset: 0,
+  });
+
+  assert(
+    versionList.total === 1 && versionList.items.length === 1,
+    'Daftar versi form tidak mengembalikan tepat satu data smoke.',
+  );
+
+  const listedVersion = versionList.items[0];
+
+  assert(listedVersion !== undefined, 'Item versi form tidak tersedia.');
+
+  assert(
+    listedVersion.id === formVersionId &&
+      listedVersion.publicFormId === formId &&
+      listedVersion.versionNumber === 1 &&
+      listedVersion.formTitle === 'Smoke Assignment Form' &&
+      listedVersion.sectionCount === 0 &&
+      listedVersion.questionCount === 0,
+    'Read model versi form tidak sesuai.',
+  );
+
+  const groupList = await repository.listGroups({
+    programId,
+    search: 'Smoke',
+    limit: 20,
+    offset: 0,
+  });
+
+  assert(
+    groupList.total === 2 && groupList.items.length === 2,
+    'Daftar Assignment Group tidak mengembalikan dua group smoke.',
+  );
+
+  const listedSelf = groupList.items.find((item) => item.id === selfGroupId);
+
+  assert(listedSelf !== undefined, 'Assignment Group SELF tidak ditemukan pada read model.');
+
+  assert(
+    listedSelf.assessmentType === 'SELF' &&
+      listedSelf.selectedParticipantCount === 2 &&
+      listedSelf.candidateAssignmentCount === 2 &&
+      listedSelf.createdAssignmentCount === 2 &&
+      listedSelf.skippedDuplicateCount === 0 &&
+      listedSelf.skippedNoRelationCount === 0,
+    'Ringkasan Assignment Group SELF tidak sesuai.',
+  );
+
+  const listedOther = groupList.items.find((item) => item.id === otherGroupId);
+
+  assert(listedOther !== undefined, 'Assignment Group OTHER tidak ditemukan pada read model.');
+
+  assert(
+    listedOther.assessmentType === 'SUPERIOR' &&
+      listedOther.selectedParticipantCount === 2 &&
+      listedOther.candidateAssignmentCount === 1 &&
+      listedOther.createdAssignmentCount === 1 &&
+      listedOther.skippedDuplicateCount === 0 &&
+      listedOther.skippedNoRelationCount === 1,
+    'Ringkasan Assignment Group OTHER tidak sesuai.',
+  );
+
   console.log('Form version lookup : OK');
+
+  console.log('Form version list   : 1');
+
+  console.log('Assignment groups   : 2');
 
   console.log('SELF assignments    : 2');
 
