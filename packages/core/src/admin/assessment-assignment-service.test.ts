@@ -124,6 +124,16 @@ function createHarness(options: HarnessOptions = {}): Harness {
     findPublicFormVersionById: async () =>
       options.formVersion === undefined ? FORM_VERSION : options.formVersion,
 
+    listPublicFormVersions: async () => ({
+      items: [],
+      total: 0,
+    }),
+
+    listGroups: async () => ({
+      items: [],
+      total: 0,
+    }),
+
     createGroup: async (input: CreateAssessmentAssignmentGroupRepositoryInput) => {
       assignmentCalls.push(input);
 

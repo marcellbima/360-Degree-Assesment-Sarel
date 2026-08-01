@@ -11,11 +11,7 @@ export {
 export { SystemClock } from './ports/clock';
 export type { ClockPort } from './ports/clock';
 export type { UserRecord, UserRepositoryPort } from './ports/user-repository';
-export type {
-  NewSession,
-  SessionRecord,
-  SessionRepositoryPort,
-} from './ports/session-repository';
+export type { NewSession, SessionRecord, SessionRepositoryPort } from './ports/session-repository';
 export type {
   ClearFailuresQuery,
   FailureQuery,
@@ -23,10 +19,7 @@ export type {
   NewLoginAttempt,
 } from './ports/login-attempt-repository';
 export type { AuditLogRepositoryPort, NewAuditLog } from './ports/audit-log-repository';
-export type {
-  AdminScopeRecord,
-  AdminScopeRepositoryPort,
-} from './ports/admin-scope-repository';
+export type { AdminScopeRecord, AdminScopeRepositoryPort } from './ports/admin-scope-repository';
 export type { TurnstileVerifierPort } from './ports/turnstile-verifier';
 
 // Auth services dan policy (Phase 3)
@@ -44,17 +37,9 @@ export type { IssuedSession } from './auth/session-service';
 export { AuthenticationService } from './auth/authentication-service';
 export { AuthService } from './auth/auth-service';
 export type { AuthServiceDeps } from './auth/auth-service';
-export {
-  ConfigError,
-  resolveRuntimeConfig,
-} from './auth/runtime-config';
+export { ConfigError, resolveRuntimeConfig } from './auth/runtime-config';
 export type { RawRuntimeEnv, RuntimeConfig } from './auth/runtime-config';
-export type {
-  AuthPrincipal,
-  LoginInput,
-  LoginResult,
-  RequestContext,
-} from './auth/types';
+export type { AuthPrincipal, LoginInput, LoginResult, RequestContext } from './auth/types';
 export {
   SUPERADMIN_ROLE,
   hasAllPermissions,
@@ -200,14 +185,9 @@ export type {
   PublishPublicFormInput,
 } from './ports/public-form-repository';
 
-export {
-  PublicFormService,
-} from './admin/public-form-service';
+export { PublicFormService } from './admin/public-form-service';
 
-export type {
-  CreatePublicFormInput,
-  PublicFormListQuery,
-} from './admin/public-form-service';
+export type { CreatePublicFormInput, PublicFormListQuery } from './admin/public-form-service';
 
 export type {
   PublicFormCatalogItem,
@@ -218,7 +198,6 @@ export type {
   UpdatePublicFormDraftInput,
 } from './admin/public-form-service';
 
-
 export type {
   CreatePublicFormGoogleSheetInput,
   CreatePublicFormGoogleSheetResult,
@@ -226,19 +205,20 @@ export type {
   PublicFormSheetSyncPort,
 } from './ports/public-form-sheet-sync';
 
-
 export type {
   DemoWorkspaceRepositoryPort,
   DemoWorkspaceStatus,
 } from './ports/demo-workspace-repository';
 
-export {
-  DemoWorkspaceService,
-} from './admin/demo-workspace-service';
+export { DemoWorkspaceService } from './admin/demo-workspace-service';
 
 export type {
+  AssessmentAssignmentFormVersionListFilter,
+  AssessmentAssignmentFormVersionListItem,
   AssessmentAssignmentFormVersionRef,
   AssessmentAssignmentGroupCreateResult,
+  AssessmentAssignmentGroupListFilter,
+  AssessmentAssignmentGroupListItem,
   AssessmentAssignmentRepositoryPort,
   AssessmentAssignmentSelection,
   AssessmentAssignmentTypeCode,
@@ -247,12 +227,11 @@ export type {
   NewAssessmentAssignmentGroup,
 } from './ports/assessment-assignment-repository';
 
-export {
-  AssessmentAssignmentService,
-} from './admin/assessment-assignment-service';
+export { AssessmentAssignmentService } from './admin/assessment-assignment-service';
 
 export type {
   AssessmentAssignmentDeps,
   AssessmentAssignmentGroupView,
+  AssessmentAssignmentListQuery,
   CreateAssessmentAssignmentInput,
 } from './admin/assessment-assignment-service';

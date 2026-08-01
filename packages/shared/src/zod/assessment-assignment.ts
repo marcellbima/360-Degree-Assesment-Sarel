@@ -1,8 +1,16 @@
 import { z } from 'zod';
 
+import { MAX_PAGE_SIZE } from '../constants';
+
 const assignmentIdSchema = z.string().trim().min(1, 'ID wajib diisi.').max(120);
 
 const optionalDateTimeSchema = z.string().trim().max(80).nullable().optional();
+
+export const assessmentAssignmentListQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(MAX_PAGE_SIZE).default(20),
+  search: z.string().trim().max(120).optional(),
+});
 
 export const assessmentAssignmentTypeSchema = z.enum(['SELF', 'SUPERIOR', 'PEER', 'SUBORDINATE']);
 
@@ -102,6 +110,10 @@ export const createAssessmentAssignmentSchema = z
       });
     }
   });
+
+export type AssessmentAssignmentListQueryInput = z.infer<
+  typeof assessmentAssignmentListQuerySchema
+>;
 
 export type AssessmentAssignmentType = z.infer<typeof assessmentAssignmentTypeSchema>;
 

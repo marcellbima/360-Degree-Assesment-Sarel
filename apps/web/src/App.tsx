@@ -14,6 +14,7 @@ import { LoginPage } from './pages/LoginPage';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { AdminModulePlaceholderPage } from './pages/admin/AdminModulePlaceholderPage';
 import { ProgramFirstModulePage } from './pages/admin/ProgramFirstModulePage';
+import { AssessmentAssignmentsPage } from './pages/admin/AssessmentAssignmentsPage';
 import { UsersPage } from './pages/admin/UsersPage';
 import { ProgramsPage } from './pages/admin/ProgramsPage';
 import { AdminScopesPage } from './pages/admin/AdminScopesPage';
@@ -238,10 +239,7 @@ function AdminWorkspace(): JSX.Element {
         <PublicFormsPage />
       ) : active ===
         'assignments' ? (
-        <ProgramFirstModulePage
-          title="Penugasan Assessment"
-          description="Program dipilih otomatis saat hanya ada satu program aktif."
-          workspaceDescription="Pilih form, Batch atau peserta, jenis penilaian, dan periode dalam satu alur."
+        <AssessmentAssignmentsPage
           initialProgramId={programContextId}
           onProgramChange={setProgramContextId}
         />
