@@ -9,6 +9,7 @@ import {
   type AssessmentAssignmentSelection,
   type AssessmentAssignmentType,
 } from '../../lib/assessment-assignment-api';
+import { AssessmentAssignmentCreatePanel } from './AssessmentAssignmentCreatePanel';
 
 function errorMessage(error: unknown, fallback: string): string {
   return error instanceof ApiError ? error.message : fallback;
@@ -378,6 +379,15 @@ export function AssessmentAssignmentsPage({
         </div>
       ) : null}
 
+      <AssessmentAssignmentCreatePanel
+        key={selectedProgram.id}
+        programId={selectedProgram.id}
+        programName={selectedProgram.name}
+        formVersions={formVersions}
+        participantCount={participantCount}
+        relationCount={relationCount}
+        onCreated={() => reload()}
+      />
       <div className="rounded-xl border border-slate-200 bg-white">
         <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
           <div>
